@@ -1,0 +1,39 @@
+  <div id="agecheck_ageverification" class="form-horizontal">
+    <div class="form-group">
+      <div class="col-sm-12">
+        <input type="hidden" name="agechecked_agecheckid" value="<?php echo $agechecked_agecheckid; ?>" id="agechecked_agecheckid" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-12">
+        <input type="hidden" name="agechecked_ageverifiedid" value="<?php echo $agechecked_ageverifiedid; ?>" id="agechecked_ageverifiedid" class="form-control" />
+      </div>
+    </div>
+  </div>
+<script type="text/javascript">
+	if (typeof Agechecked !== "undefined" && Agechecked.API.isloaded()) {
+	   Agechecked.API.registerreturn(function(d){
+		   Agechecked.API.modalclose();
+		   //alert(d.data);
+		   var msg = JSON.parse(d.data);
+		   if (msg.status == 6 || msg.status == 7) {
+				 $('#agechecked_agecheckid').val(msg.agecheckid);
+				 $('#agechecked_ageverifiedid').val(msg.ageverifiedid);
+		   } else {
+			 if (msg.agecheckedpopupurl) {
+				Agechecked.API.modalopen(msg.agecheckedpopupurl)
+			 }
+		   }
+	   });
+
+	   Agechecked.API.createagecheckjson({
+			mode: 'javascript',
+			avtype: 'agechecked',
+	   }).done(function(json){
+			Agechecked.API.modalopen(json.agecheckurl);
+	   });
+	}
+	else
+	  alert("agechecked.com service not loaded.");
+
+</script> 

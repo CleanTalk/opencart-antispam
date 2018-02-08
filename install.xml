@@ -152,14 +152,8 @@
     </file> 
     <file path="catalog/controller/product/product.php">        
         <operation> 
-            <search><![CDATA[if (!isset($json['error'])) {
-                $this->load->model('catalog/review');
-
-                $this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
-
-                $json['success'] = $this->language->get('text_success');
-            }]]></search>
-            <add position="replace"><![CDATA[if (!isset($json['error'])) {
+            <search><![CDATA[if (!isset($json['error'])) {]]></search>
+            <add position="before"><![CDATA[if (!isset($json['error'])) {
                 if (session_status() == PHP_SESSION_NONE) 
                     session_start();
                 require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
@@ -195,16 +189,7 @@
                 $ct->server_url = 'http://moderate.cleantalk.org';
                 $ct_result = $ct->isAllowMessage($ct_request);
                 if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                    $json['error'] = $ct_result->comment;
-                else 
-                {
-                    $this->load->model('catalog/review');
-
-                    $this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
-
-                    $json['success'] = $this->language->get('text_success');                
-                }               
-
+                    $json['error'] = $ct_result->comment;               
             }]]></add>
         </operation> 
                 <operation> 
@@ -259,5 +244,5 @@
             <search><![CDATA[<script type="text/javascript"><!--]]></search>
             <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
         </operation>              
-    </file
+    </file>
 </modification>

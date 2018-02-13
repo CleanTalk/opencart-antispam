@@ -29,7 +29,7 @@
                 if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
                     $js_on = 1;
                 $sender_info = json_encode($sender_info);   
-                    $ct = new Cleantalk();
+                $ct = new Cleantalk();
                 $ct_request = new CleantalkRequest();
                 $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
                 $ct_request->sender_email = $this->request->post['email'];

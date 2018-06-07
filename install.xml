@@ -10,6 +10,8 @@
             <search><![CDATA[return !$this->error;]]></search>
             <add position="before"><![CDATA[if (empty($this->error))
         {
+            if ($this->config->get('module_antispambycleantalk_status'))
+            {
                 require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
                                 $refferrer = null;
                 if (isset($_SERVER['HTTP_REFERER'])) {
@@ -46,7 +48,9 @@
                     $ct_result = $ct->isAllowUser($ct_request);
                     if ($ct_result->errno == 0 && $ct_result->allow == 0)
                         $this->error['warning'] = $ct_result->comment;                 
-                }
+                }            
+            }
+
       
     }
 
@@ -63,6 +67,8 @@
             <search><![CDATA[// Customer Group]]></search>
             <add position="before"><![CDATA[if (empty($json['error']))
         {
+            if ($this->config->get('module_antispambycleantalk_status'))
+            {
                 if (session_status() == PHP_SESSION_NONE) 
                     session_start();
                 require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
@@ -103,7 +109,9 @@
                     $ct_result = $ct->isAllowUser($ct_request);
                     if ($ct_result->errno == 0 && $ct_result->allow == 0)
                         $json['error']['warning'] = $ct_result->comment;                  
-                }
+                }            
+            }
+
          
     }
 
@@ -115,6 +123,8 @@
             <search><![CDATA[// Customer Group]]></search>
             <add position="before"><![CDATA[if (empty($json['error']))
         {
+            if ($this->config->get('module_antispambycleantalk_status'))
+            {
                 if (session_status() == PHP_SESSION_NONE) 
                     session_start();
                 require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
@@ -155,7 +165,9 @@
                     $ct_result = $ct->isAllowUser($ct_request);
                     if ($ct_result->errno == 0 && $ct_result->allow == 0)
                         $json['error']['warning'] = $ct_result->comment;                
-                }
+                }            
+            }
+
            
     }
 
@@ -166,42 +178,46 @@
         <operation> 
             <search><![CDATA[if (!isset($json['error'])) {]]></search>
             <add position="before"><![CDATA[if (!isset($json['error'])) {
-                if (session_status() == PHP_SESSION_NONE) 
-                    session_start();
-                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
-                $refferrer = null;
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
-                }
+                if ($this->config->get('module_antispambycleantalk_status'))
+                {
+                    if (session_status() == PHP_SESSION_NONE) 
+                        session_start();
+                    require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
+                    $refferrer = null;
+                    if (isset($_SERVER['HTTP_REFERER'])) {
+                        $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
+                    }
 
-                $user_agent = null;
-                if (isset($_SERVER['HTTP_USER_AGENT'])) {
-                    $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
+                    $user_agent = null;
+                    if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                        $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
+                    }
+                    $sender_info = array(
+                        'REFFERRER' => $refferrer,
+                        'post_url' => $refferrer,
+                        'USER_AGENT' => $user_agent
+                    );
+                    $js_on = 0;
+                    if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
+                        $js_on = 1;
+                    $sender_info = json_encode($sender_info);   
+                    $ct = new Cleantalk();
+                    $ct_request = new CleantalkRequest();
+                    $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
+                    $ct_request->sender_nickname = trim($this->request->post['name']);
+                    $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
+                    $ct_request->message = trim($this->request->post['text']);
+                    $ct_request->agent = 'opencart-13';
+                    $ct_request->js_on = $js_on;
+                    $ct_request->sender_info = $sender_info;
+                    $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
+                    $ct->work_url = 'http://moderate.cleantalk.org';
+                    $ct->server_url = 'http://moderate.cleantalk.org';
+                    $ct_result = $ct->isAllowMessage($ct_request);
+                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                        $json['error'] = $ct_result->comment;                
                 }
-                $sender_info = array(
-                    'REFFERRER' => $refferrer,
-                    'post_url' => $refferrer,
-                    'USER_AGENT' => $user_agent
-                );
-                $js_on = 0;
-                if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
-                    $js_on = 1;
-                $sender_info = json_encode($sender_info);   
-                $ct = new Cleantalk();
-                $ct_request = new CleantalkRequest();
-                $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_request->sender_nickname = trim($this->request->post['name']);
-                $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
-                $ct_request->message = trim($this->request->post['text']);
-                $ct_request->agent = 'opencart-13';
-                $ct_request->js_on = $js_on;
-                $ct_request->sender_info = $sender_info;
-                $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
-                $ct->work_url = 'http://moderate.cleantalk.org';
-                $ct->server_url = 'http://moderate.cleantalk.org';
-                $ct_result = $ct->isAllowMessage($ct_request);
-                if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                    $json['error'] = $ct_result->comment;               
+               
             }]]></add>
         </operation> 
                 <operation> 
@@ -215,48 +231,52 @@
             <search><![CDATA[return !$this->error;]]></search>
             <add position="before"><![CDATA[if (empty($this->error))
         {
-                if (session_status() == PHP_SESSION_NONE) 
-                    session_start();
-                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
-                $refferrer = null;
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
+                if ($this->config->get('module_antispambycleantalk_status'))
+                {
+                    if (session_status() == PHP_SESSION_NONE) 
+                        session_start();
+                    require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
+                    $refferrer = null;
+                    if (isset($_SERVER['HTTP_REFERER'])) {
+                        $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
+                    }
+
+                    $user_agent = null;
+                    if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                        $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
+                    }
+                    $sender_info = array(
+                        'REFFERRER' => $refferrer,
+                        'post_url' => $refferrer,
+                        'USER_AGENT' => $user_agent
+                    );
+                    $js_on = 0;
+                    if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
+                        $js_on = 1;
+                    $sender_info = json_encode($sender_info);   
+                        $ct = new Cleantalk();
+                    $ct_request = new CleantalkRequest();
+                    $post_info['comment_type'] = 'contact';
+                    $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
+                    $ct_request->sender_email = $this->request->post['email'];
+                    $ct_request->sender_nickname = trim($this->request->post['name']);
+                    $ct_request->message = trim($this->request->post['enquiry']);
+                    $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
+                    $ct_request->agent = 'opencart-13';
+                    $ct_request->js_on = $js_on;
+                    $ct_request->post_info = $post_info;
+                    $ct_request->sender_info = $sender_info;
+                    $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
+                    $ct->work_url = 'http://moderate.cleantalk.org';
+                    $ct->server_url = 'http://moderate.cleantalk.org';
+                    if ($this->config->get('module_antispambycleantalk_check_contact_form'))
+                    {
+                        $ct_result = $ct->isAllowMessage($ct_request);
+                        if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                            $this->error['enquiry'] = $ct_result->comment;                
+                    }                
                 }
 
-                $user_agent = null;
-                if (isset($_SERVER['HTTP_USER_AGENT'])) {
-                    $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
-                }
-                $sender_info = array(
-                    'REFFERRER' => $refferrer,
-                    'post_url' => $refferrer,
-                    'USER_AGENT' => $user_agent
-                );
-                $js_on = 0;
-                if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
-                    $js_on = 1;
-                $sender_info = json_encode($sender_info);   
-                    $ct = new Cleantalk();
-                $ct_request = new CleantalkRequest();
-                $post_info['comment_type'] = 'contact';
-                $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_request->sender_email = $this->request->post['email'];
-                $ct_request->sender_nickname = trim($this->request->post['name']);
-                $ct_request->message = trim($this->request->post['enquiry']);
-                $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
-                $ct_request->agent = 'opencart-13';
-                $ct_request->js_on = $js_on;
-                $ct_request->post_info = $post_info;
-                $ct_request->sender_info = $sender_info;
-                $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
-                $ct->work_url = 'http://moderate.cleantalk.org';
-                $ct->server_url = 'http://moderate.cleantalk.org';
-                if ($this->config->get('module_antispambycleantalk_check_contact_form'))
-                {
-                    $ct_result = $ct->isAllowMessage($ct_request);
-                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                        $this->error['warning'] = $ct_result->comment;                
-                }
            
     }
 

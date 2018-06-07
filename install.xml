@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>1.2</version>
+    <version>1.3</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
@@ -35,15 +35,19 @@
                 $ct_request->sender_email = $this->request->post['email'];
                 $ct_request->sender_nickname = trim($this->request->post['firstname']).' '.trim($this->request->post['lastname']);
                 $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
-                $ct_request->agent = 'opencart-12';
+                $ct_request->agent = 'opencart-13';
                 $ct_request->js_on = $js_on;
                 $ct_request->sender_info = $sender_info;
                 $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
                 $ct->work_url = 'http://moderate.cleantalk.org';
                 $ct->server_url = 'http://moderate.cleantalk.org';
-                $ct_result = $ct->isAllowUser($ct_request);
-                if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                    $this->error['warning'] = $ct_result->comment;       
+                if ($this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    $ct_result = $ct->isAllowUser($ct_request);
+                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                        $this->error['warning'] = $ct_result->comment;                 
+                }
+      
     }
 
 ]]></add>
@@ -87,16 +91,20 @@
                 $ct_request->sender_email = $this->request->post['email'];
                 $ct_request->sender_nickname = trim($this->request->post['firstname']).' '.trim($this->request->post['lastname']);
                 $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
-                $ct_request->agent = 'opencart-12';
+                $ct_request->agent = 'opencart-13';
                 $ct_request->js_on = $js_on;
                 $ct_request->post_info = $post_info;
                 $ct_request->sender_info = $sender_info;
                 $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
                 $ct->work_url = 'http://moderate.cleantalk.org';
                 $ct->server_url = 'http://moderate.cleantalk.org';
-                $ct_result = $ct->isAllowUser($ct_request);
-                if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                    $json['error']['warning'] = $ct_result->comment;           
+                if ($this->config->get('module_antispambycleantalk_check_orders'))
+                {
+                    $ct_result = $ct->isAllowUser($ct_request);
+                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                        $json['error']['warning'] = $ct_result->comment;                  
+                }
+         
     }
 
 ]]></add>
@@ -135,16 +143,20 @@
                 $ct_request->sender_email = $this->request->post['email'];
                 $ct_request->sender_nickname = trim($this->request->post['firstname']).' '.trim($this->request->post['lastname']);
                 $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
-                $ct_request->agent = 'opencart-12';
+                $ct_request->agent = 'opencart-13';
                 $ct_request->js_on = $js_on;
                 $ct_request->post_info = $post_info;
                 $ct_request->sender_info = $sender_info;
                 $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
                 $ct->work_url = 'http://moderate.cleantalk.org';
                 $ct->server_url = 'http://moderate.cleantalk.org';
-                $ct_result = $ct->isAllowUser($ct_request);
-                if ($ct_result->errno == 0 && $ct_result->allow == 0)
-                    $json['error']['warning'] = $ct_result->comment;           
+                if ($this->config->get('module_antispambycleantalk_check_orders'))
+                {
+                    $ct_result = $ct->isAllowUser($ct_request);
+                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                        $json['error']['warning'] = $ct_result->comment;                
+                }
+           
     }
 
 ]]></add>
@@ -181,7 +193,7 @@
                 $ct_request->sender_nickname = trim($this->request->post['name']);
                 $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
                 $ct_request->message = trim($this->request->post['text']);
-                $ct_request->agent = 'opencart-12';
+                $ct_request->agent = 'opencart-13';
                 $ct_request->js_on = $js_on;
                 $ct_request->sender_info = $sender_info;
                 $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
@@ -197,7 +209,60 @@
             <add position="after"><![CDATA[if (session_status() == PHP_SESSION_NONE) 
                     session_start(); if (!($this->request->server['REQUEST_METHOD'] == 'POST')) $_SESSION['ct_submit_time'] = time();]]></add>
         </operation>           
-    </file>  
+    </file>
+    <file path="catalog/controller/information/contact.php">        
+        <operation> 
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[if (empty($this->error))
+        {
+                if (session_status() == PHP_SESSION_NONE) 
+                    session_start();
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php';
+                $refferrer = null;
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
+                }
+
+                $user_agent = null;
+                if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                    $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
+                }
+                $sender_info = array(
+                    'REFFERRER' => $refferrer,
+                    'post_url' => $refferrer,
+                    'USER_AGENT' => $user_agent
+                );
+                $js_on = 0;
+                if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
+                    $js_on = 1;
+                $sender_info = json_encode($sender_info);   
+                    $ct = new Cleantalk();
+                $ct_request = new CleantalkRequest();
+                $post_info['comment_type'] = 'contact';
+                $ct_request->auth_key = trim($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_request->sender_email = $this->request->post['email'];
+                $ct_request->sender_nickname = trim($this->request->post['name']);
+                $ct_request->message = trim($this->request->post['enquiry']);
+                $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
+                $ct_request->agent = 'opencart-13';
+                $ct_request->js_on = $js_on;
+                $ct_request->post_info = $post_info;
+                $ct_request->sender_info = $sender_info;
+                $ct_request->submit_time = (int)(time() - $_SESSION['ct_submit_time']);
+                $ct->work_url = 'http://moderate.cleantalk.org';
+                $ct->server_url = 'http://moderate.cleantalk.org';
+                if ($this->config->get('module_antispambycleantalk_check_contact_form'))
+                {
+                    $ct_result = $ct->isAllowMessage($ct_request);
+                    if ($ct_result->errno == 0 && $ct_result->allow == 0)
+                        $this->error['warning'] = $ct_result->comment;                
+                }
+           
+    }
+
+]]></add>
+        </operation>          
+    </file>      
     <file path = "catalog/controller/checkout/checkout.php">
                         <operation> 
             <search><![CDATA[public function index() {]]></search>
@@ -205,6 +270,13 @@
                     session_start(); $_SESSION['ct_submit_time'] = time();]]></add>
         </operation>  
     </file>
+    <file path = "catalog/controller/information/contact.php">
+                        <operation> 
+            <search><![CDATA[public function index() {]]></search>
+            <add position="after"><![CDATA[if (session_status() == PHP_SESSION_NONE) 
+                    session_start(); $_SESSION['ct_submit_time'] = time();]]></add>
+        </operation>  
+    </file>    
         <file path="catalog/view/theme/*/template/account/register.twig">        
         <operation> 
             <search><![CDATA[<input type="submit" value="{{ button_continue }}" class="btn btn-primary" />]]></search>
@@ -245,4 +317,14 @@
             <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
         </operation>              
     </file>
+        <file path="catalog/view/theme/*/template/information/contact.twig">        
+        <operation> 
+            <search><![CDATA[<input class="btn btn-primary" type="submit" value="{{ button_submit }}" />]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+        </operation>
+        <operation> 
+            <search><![CDATA[{{ footer }}]]></search>
+            <add position="before"><![CDATA[<script type="text/javascript">var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();</script>]]></add>
+        </operation>              
+    </file>    
 </modification>

@@ -80,9 +80,9 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 	}
 
 	public function install(){
-		/*$check = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` LIKE 'agechecked_ageverificationid'");
+		/*$check = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` LIKE 'antispambycleantalk'");
 		if(!$check->num_rows){
-			$this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD `agechecked_ageverificationid` VARCHAR(255) NULL");
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD `antispambycleantalk` VARCHAR(255) NULL");
 		}
 		*/
 	}

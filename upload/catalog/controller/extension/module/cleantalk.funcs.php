@@ -5,9 +5,10 @@ class CleantalkFuncs
 	const ENGINE = 'opencart-13';
 
 	private $ct_access_key = '';
+	
 	private $ct_status, $ct_check_register, $ct_check_orders, $ct_check_contact, $ct_check_reviews;
 
-	function __construct($access_key, $status, $check_register, $check_orders, $check_contact, $check_reviews)
+	function __construct($access_key = '', $status = '0', $check_register = '0', $check_orders = '0', $check_contact = '0', $check_reviews = '0')
 	{
 		$this->ct_access_key = trim($access_key);
 		$this->ct_status = $status;

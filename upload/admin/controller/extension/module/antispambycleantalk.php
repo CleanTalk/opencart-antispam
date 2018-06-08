@@ -63,7 +63,12 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 			$data['module_antispambycleantalk_check_contact_form'] = $this->request->post['module_antispambycleantalk_check_contact_form'];
 		} else {
 			$data['module_antispambycleantalk_check_contact_form'] = $this->config->get('module_antispambycleantalk_check_contact_form');
-		}		
+		}
+		if (isset($this->request->post['module_antispambycleantalk_check_reviews'])) {
+			$data['module_antispambycleantalk_check_reviews'] = $this->request->post['module_antispambycleantalk_check_reviews'];
+		} else {
+			$data['module_antispambycleantalk_check_reviews'] = $this->config->get('module_antispambycleantalk_check_reviews');
+		}				
 		if (isset($this->request->post['module_antispambycleantalk_access_key'])) {
 			$data['module_antispambycleantalk_access_key'] = $this->request->post['module_antispambycleantalk_access_key'];
 		} elseif($this->config->get('module_antispambycleantalk_access_key')) {

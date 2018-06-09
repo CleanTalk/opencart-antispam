@@ -110,7 +110,7 @@
     </file>    
         <file path="catalog/view/theme/*/template/account/register.twig">        
         <operation> 
-            <search><![CDATA[<input type="submit" value="{{ button_continue }}" class="btn btn-primary" />]]></search>
+            <search><![CDATA[<form action="{{ action }}" method="post" enctype="multipart/form-data" class="form-horizontal">]]></search>
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
@@ -140,8 +140,8 @@
     </file>
         <file path="catalog/view/theme/*/template/product/product.twig">        
         <operation> 
-            <search><![CDATA[<div class="buttons clearfix">]]></search>
-            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+            <search><![CDATA[<form class="form-horizontal" id="form-review">]]></search>
+            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
             <search><![CDATA[<script type="text/javascript"><!--]]></search>
@@ -150,8 +150,8 @@
     </file>
         <file path="catalog/view/theme/*/template/information/contact.twig">        
         <operation> 
-            <search><![CDATA[<input class="btn btn-primary" type="submit" value="{{ button_submit }}" />]]></search>
-            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+            <search><![CDATA[<form action="{{ action }}" method="post" enctype="multipart/form-data" class="form-horizontal">]]></search>
+            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
             <search><![CDATA[{{ footer }}]]></search>

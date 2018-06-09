@@ -10,11 +10,15 @@
             <search><![CDATA[return !$this->error;]]></search>
             <add position="before"><![CDATA[if (empty($this->error))
         {
-            require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'),$this->config->get('module_antispambycleantalk_status'),$this->config->get('module_antispambycleantalk_check_registrations'), $this->config->get('module_antispambycleantalk_check_orders'), $this->config->get('module_antispambycleantalk_check_contact_form'), $this->config->get('module_antispambycleantalk_check_reviews'));
-            $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
-            if ($ct_result['allow'] == 0)
-                $this->error['warning'] = $ct_result['comment'];
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+            {
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));            
+                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $this->error['warning'] = $ct_result['comment'];            
+            }
+
 
       
     }
@@ -32,11 +36,15 @@
             <search><![CDATA[// Customer Group]]></search>
             <add position="before"><![CDATA[if (empty($json['error']))
         {
-            require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'),$this->config->get('module_antispambycleantalk_status'),$this->config->get('module_antispambycleantalk_check_registrations'), $this->config->get('module_antispambycleantalk_check_orders'), $this->config->get('module_antispambycleantalk_check_contact_form'), $this->config->get('module_antispambycleantalk_check_reviews'));
-            $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
-            if ($ct_result['allow'] == 0)
-                $json['error']['warning'] = $ct_result['comment'];                
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
+            {
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $json['error']['warning'] = $ct_result['comment'];             
+            }
+               
     }
 
 ]]></add>
@@ -47,13 +55,14 @@
             <search><![CDATA[// Customer Group]]></search>
             <add position="before"><![CDATA[if (empty($json['error']))
         {
-            require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'),$this->config->get('module_antispambycleantalk_status'),$this->config->get('module_antispambycleantalk_check_registrations'), $this->config->get('module_antispambycleantalk_check_orders'), $this->config->get('module_antispambycleantalk_check_contact_form'), $this->config->get('module_antispambycleantalk_check_reviews'));
-            $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
-            if ($ct_result['allow'] == 0)
-                $json['error']['warning'] = $ct_result['comment'];
-
-           
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
+            {
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $json['error']['warning'] = $ct_result['comment'];            
+            }           
     }
 
 ]]></add>
@@ -63,14 +72,15 @@
         <operation> 
             <search><![CDATA[if (!isset($json['error'])) {]]></search>
             <add position="before"><![CDATA[if (!isset($json['error'])) {
-
-            require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'),$this->config->get('module_antispambycleantalk_status'),$this->config->get('module_antispambycleantalk_check_registrations'), $this->config->get('module_antispambycleantalk_check_orders'), $this->config->get('module_antispambycleantalk_check_contact_form'), $this->config->get('module_antispambycleantalk_check_reviews'));
-            $ct_result = $ct_funcs->onSpamCheck('comment',$this->request->post);
-            if ($ct_result['allow'] == 0)
-                $json['error'] = $ct_result['comment'];
-               
-            }]]></add>
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
+            {
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_result = $ct_funcs->onSpamCheck('comment',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $json['error'] = $ct_result['comment'];            
+            }              
+        }]]></add>
         </operation> 
                 <operation> 
             <search><![CDATA[public function index() {]]></search>
@@ -83,13 +93,15 @@
             <search><![CDATA[return !$this->error;]]></search>
             <add position="before"><![CDATA[if (empty($this->error))
         {
-            require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'),$this->config->get('module_antispambycleantalk_status'),$this->config->get('module_antispambycleantalk_check_registrations'), $this->config->get('module_antispambycleantalk_check_orders'), $this->config->get('module_antispambycleantalk_check_contact_form'), $this->config->get('module_antispambycleantalk_check_reviews'));
-            $ct_result = $ct_funcs->onSpamCheck('contact',$this->request->post);
-            if ($ct_result['allow'] == 0)
-                $this->error['enquiry'] = $ct_result['comment'];        
-           
-    }
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
+            {
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_result = $ct_funcs->onSpamCheck('contact',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $this->error['enquiry'] = $ct_result['comment'];            
+            }                   
+        }
 
 ]]></add>
         </operation>          
@@ -110,8 +122,8 @@
     </file>    
         <file path="catalog/view/theme/*/template/account/register.twig">        
         <operation> 
-            <search><![CDATA[<form action="{{ action }}" method="post" enctype="multipart/form-data" class="form-horizontal">]]></search>
-            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+            <search><![CDATA[<div class="buttons">]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
             <search><![CDATA[<script type="text/javascript"><!--]]></search>
@@ -140,8 +152,8 @@
     </file>
         <file path="catalog/view/theme/*/template/product/product.twig">        
         <operation> 
-            <search><![CDATA[<form class="form-horizontal" id="form-review">]]></search>
-            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+            <search><![CDATA[<div class="buttons clearfix">]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
             <search><![CDATA[<script type="text/javascript"><!--]]></search>
@@ -150,8 +162,8 @@
     </file>
         <file path="catalog/view/theme/*/template/information/contact.twig">        
         <operation> 
-            <search><![CDATA[<form action="{{ action }}" method="post" enctype="multipart/form-data" class="form-horizontal">]]></search>
-            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+            <search><![CDATA[<div class="buttons">]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
         <operation> 
             <search><![CDATA[{{ footer }}]]></search>

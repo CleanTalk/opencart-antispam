@@ -60,20 +60,12 @@ class CleantalkFuncs
         $ret_val = array();
         $ret_val['allow'] = 1;      
 
-        $refferrer = null;
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $refferrer = htmlspecialchars((string) $_SERVER['HTTP_REFERER']);
-        }
-
-        $user_agent = null;
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
-        }
         $sender_info = array(
-            'REFFERRER' => $refferrer,
-            'post_url' => $refferrer,
-            'USER_AGENT' => $user_agent,
-            'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer'])?$_COOKIE['apbct_prev_referer']:null,
+            'REFFERRER' => isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : null,
+            'page_url' => isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) : null,
+            'USER_AGENT' => isset($_SERVER['HTTP_USER_AGENT']) ? htmlspecialchars($_SERVER['HTTP_USER_AGENT']) : null,
+            'fields_number' => sizeof($data),
+            'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer']) ? $_COOKIE['apbct_prev_referer'] : null,
             'cookies_enabled' => $this->apbctCookiesTest(),
         );
         $js_on = 0;

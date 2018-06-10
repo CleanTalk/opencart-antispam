@@ -60,18 +60,21 @@ class CleantalkFuncs
         $ret_val = array();
         $ret_val['allow'] = 1;      
 
-        $sender_info = array(
+        $sender_info = json_encode(array(
             'REFFERRER' => isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : null,
             'page_url' => isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) : null,
             'USER_AGENT' => isset($_SERVER['HTTP_USER_AGENT']) ? htmlspecialchars($_SERVER['HTTP_USER_AGENT']) : null,
             'fields_number' => sizeof($data),
             'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer']) ? $_COOKIE['apbct_prev_referer'] : null,
             'cookies_enabled' => $this->apbctCookiesTest(),
-        );
+        ));
+        $post_info = json_encode(array(
+            'comment_type' => $content_type,
+            'post_url' => isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : null,
+        ));
         $js_on = 0;
         if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
             $js_on = 1;
-        $sender_info = json_encode($sender_info);   
         $ct = new Cleantalk();
         $ct->work_url = 'http://moderate.cleantalk.org';
         $ct->server_url = 'http://moderate.cleantalk.org';          
@@ -82,7 +85,6 @@ class CleantalkFuncs
         $ct_request->js_on = $js_on;
         $ct_request->sender_info = $sender_info;
         $ct_request->submit_time = isset($_COOKIE['apbct_timestamp']) ? time() - intval($_COOKIE['apbct_timestamp']) : 0;
-        $post_info['comment_type'] = $content_type;
         $ct_request->post_info = $post_info;            
         switch ($content_type)
         {

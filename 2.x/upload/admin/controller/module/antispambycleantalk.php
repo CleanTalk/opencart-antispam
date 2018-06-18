@@ -5,8 +5,6 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 	public function index() {
 		$data = $this->load->language('module/antispambycleantalk');
 
-		$this->document->setTitle($this->language->get('heading_title'));
-
 		$this->load->model('setting/setting');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
@@ -17,6 +15,9 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 			$this->response->redirect($this->url->link('marketplace/extension', 'token=' . $this->session->data['token'] . '&type=module', true));
 		}
 
+		$data['heading_title'] = $this->language->get('heading_title');
+		$data['text_edit'] = $this->language->get('text_edit');
+		
 		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
 		} else {

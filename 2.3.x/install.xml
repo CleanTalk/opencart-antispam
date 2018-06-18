@@ -12,7 +12,7 @@
         {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
             {
-                require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));            
                 $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
                 if ($ct_result['allow'] == 0)
@@ -27,7 +27,7 @@
         </operation> 
                 <operation> 
             <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>           
     </file>
@@ -38,7 +38,7 @@
         {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
             {
-                require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
                 $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
                 if ($ct_result['allow'] == 0)
@@ -57,7 +57,7 @@
         {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
             {
-                require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
                 $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
                 if ($ct_result['allow'] == 0)
@@ -74,7 +74,7 @@
             <add position="before"><![CDATA[if (!isset($json['error'])) {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
             {
-                require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
                 $ct_result = $ct_funcs->onSpamCheck('comment',$this->request->post);
                 if ($ct_result['allow'] == 0)
@@ -84,7 +84,7 @@
         </operation> 
                 <operation> 
             <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>           
     </file>
@@ -95,7 +95,7 @@
         {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
             {
-                require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+                require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
                 $ct_result = $ct_funcs->onSpamCheck('contact',$this->request->post);
                 if ($ct_result['allow'] == 0)
@@ -109,14 +109,14 @@
     <file path = "catalog/controller/checkout/checkout.php">
                         <operation> 
             <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>  
     </file>
     <file path = "catalog/controller/information/contact.php">
                         <operation> 
             <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/module/cleantalk.funcs.php';
+            <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>  
     </file>    

@@ -1,5 +1,5 @@
 <?php
-class ControllerExtensionModuleAntispamByCleantalk extends Controller {
+class ControllerModuleAntispamByCleantalk extends Controller {
 	public function index() {
 		$this->load->language('module/antispambycleantalk');
 

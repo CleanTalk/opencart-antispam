@@ -107,14 +107,14 @@
         </operation>          
     </file>      
     <file path = "catalog/controller/checkout/checkout.php">
-                        <operation> 
+        <operation> 
             <search><![CDATA[public function index() {]]></search>
             <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>  
     </file>
     <file path = "catalog/controller/information/contact.php">
-                        <operation> 
+        <operation> 
             <search><![CDATA[public function index() {]]></search>
             <add position="after"><![CDATA[require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.funcs.php';
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
@@ -126,17 +126,11 @@
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
     </file>
-        <file path="catalog/view/theme/*/template/checkout/register.twig">        
+        <file path="catalog/view/theme/*/template/checkout/checkout.twig">        
         <operation> 
-            <search><![CDATA[<input type="button" value="{{ button_continue }}" id="button-register" data-loading-text="{{ text_loading }}" class="btn btn-primary" />]]></search>
+            <search><![CDATA[<div class="panel-collapse collapse" id="collapse-payment-address">]]></search>
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
-    </file>
-        <file path="catalog/view/theme/*/template/checkout/guest.twig">        
-        <operation> 
-            <search><![CDATA[<input type="button" value="{{ button_continue }}" id="button-guest" data-loading-text="{{ text_loading }}" class="btn btn-primary" />]]></search>
-            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>
     </file>
         <file path="catalog/view/theme/*/template/product/product.twig">        
         <operation> 

@@ -126,15 +126,9 @@
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
     </file>
-        <file path="catalog/view/theme/*/template/checkout/register.tpl">        
+        <file path="catalog/view/theme/*/template/checkout/checkout.tpl">        
         <operation> 
-            <search><![CDATA[<input type="button" value="<?php echo $button_continue; ?>" id="button-register" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary" />]]></search>
-            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>            
-    </file>
-        <file path="catalog/view/theme/*/template/checkout/guest.tpl">        
-        <operation> 
-            <search><![CDATA[<input type="button" value="<?php echo $button_continue; ?>" id="button-guest" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary" />]]></search>
+            <search><![CDATA[<div class="panel-collapse collapse" id="collapse-payment-address">]]></search>
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
     </file>

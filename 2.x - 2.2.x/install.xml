@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>1.4</version>
+    <version>1.5</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
@@ -124,50 +124,36 @@
         <operation> 
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>
-        <operation> 
-            <search><![CDATA[<script type="text/javascript"><!--]]></search>
-            <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
-        </operation>              
+        </operation>             
     </file>
         <file path="catalog/view/theme/*/template/checkout/register.tpl">        
         <operation> 
             <search><![CDATA[<input type="button" value="<?php echo $button_continue; ?>" id="button-register" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary" />]]></search>
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>
-        <operation> 
-            <search><![CDATA[<script type="text/javascript"><!--]]></search>
-            <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
-        </operation>              
+        </operation>            
     </file>
         <file path="catalog/view/theme/*/template/checkout/guest.tpl">        
         <operation> 
             <search><![CDATA[<input type="button" value="<?php echo $button_continue; ?>" id="button-guest" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary" />]]></search>
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>
-        <operation> 
-            <search><![CDATA[<script type="text/javascript"><!--]]></search>
-            <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
-        </operation>              
+        </operation>             
     </file>
         <file path="catalog/view/theme/*/template/product/product.tpl">        
         <operation> 
             <search><![CDATA[<div class="buttons clearfix">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
-        </operation>
-        <operation> 
-            <search><![CDATA[<script type="text/javascript"><!--]]></search>
-            <add position="after"><![CDATA[var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();]]></add>
         </operation>              
     </file>
         <file path="catalog/view/theme/*/template/information/contact.tpl">        
         <operation> 
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+        </operation>             
+    </file>
+        <file path="catalog/view/theme/*/template/common/header.tpl">
+        <operation>
+            <search><![CDATA[<?php foreach ($scripts as $script) { ?>]]></search>
+            <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.5" type="text/javascript"></script>]]></add>            
         </operation>
-        <operation> 
-            <search><![CDATA[<?php echo $footer; ?>]]></search>
-            <add position="before"><![CDATA[<script type="text/javascript">var date = new Date(); document.getElementById("ct_checkjs").value = date.getFullYear();</script>]]></add>
-        </operation>              
-    </file>    
+    </file>            
 </modification>

@@ -3,7 +3,7 @@ require_once DIR_APPLICATION . '/controller/extension/module/cleantalk.class.php
 
 class CleantalkFuncs
 {
-    const ENGINE = 'opencart-14';
+    const ENGINE = 'opencart-15';
 
     private $ct_access_key = '';
 
@@ -67,6 +67,13 @@ class CleantalkFuncs
             'fields_number' => sizeof($data),
             'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer']) ? $_COOKIE['apbct_prev_referer'] : null,
             'cookies_enabled' => $this->apbctCookiesTest(),
+            'mouse_cursor_positions' => isset($_COOKIE['apbct_pointer_data']) ? json_decode(stripslashes($_COOKIE['apbct_pointer_data']), true) : null,
+            'js_timezone'            => isset($_COOKIE['apbct_timezone']) ? $_COOKIE['apbct_timezone'] : null,
+            'key_press_timestamp'    => isset($_COOKIE['apbct_fkp_timestamp']) ? $_COOKIE['apbct_fkp_timestamp'] : null,
+            'page_set_timestamp'     => isset($_COOKIE['apbct_ps_timestamp']) ? $_COOKIE['apbct_ps_timestamp'] : null,
+            'form_visible_inputs'    => !empty($_COOKIE['apbct_visible_fields_count']) ? $_COOKIE['apbct_visible_fields_count'] : null,
+            'apbct_visible_fields'   => !empty($_COOKIE['apbct_visible_fields']) ? $_COOKIE['apbct_visible_fields'] : null,
+
         ));
         $post_info = json_encode(array(
             'comment_type' => $content_type,

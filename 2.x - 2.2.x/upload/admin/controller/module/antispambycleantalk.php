@@ -27,22 +27,22 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL')
 		);
 
 		$data['breadcrumbs'][] = array(
-			'text' => $this->language->get('text_extension'),
-			'href' => $this->url->link('marketplace/extension', 'token=' . $this->session->data['token'] . '&type=module', true)
+			'text' => $this->language->get('text_module'),
+			'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL')
 		);
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('module/antispambycleantalk', 'token=' . $this->session->data['token'], true)
+			'href' => $this->url->link('module/antispambycleantalk', 'token=' . $this->session->data['token'], 'SSL')
 		);
 
-		$data['action'] = $this->url->link('module/antispambycleantalk', 'token=' . $this->session->data['token'], true);
+		$data['action'] = $this->url->link('module/antispambycleantalk', 'token=' . $this->session->data['token'], 'SSL');
 
-		$data['cancel'] = $this->url->link('marketplace/extension', 'token=' . $this->session->data['token'] . '&type=module', true);
+		$data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
 		if (isset($this->request->post['module_antispambycleantalk_status'])) {
 			$data['module_antispambycleantalk_status'] = $this->request->post['module_antispambycleantalk_status'];
@@ -81,21 +81,16 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
 
-		$this->response->setOutput($this->load->view('module/antispambycleantalk', $data));
+		$this->response->setOutput($this->load->view('module/antispambycleantalk.tpl', $data));
 	}
-
 	public function install(){
-		/*$check = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` LIKE 'antispambycleantalk'");
-		if(!$check->num_rows){
-			$this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD `antispambycleantalk` VARCHAR(255) NULL");
-		}
-		*/
+		$this->load->model('module/antispambycleantalk');
+		$this->model_module_antispambycleantalk->install();
 	}
 
 	public function uninstall(){
-		$this->load->model('setting/setting');
-
-		$this->model_setting_setting->deleteSetting('module_antispambycleantalk');
+		$this->load->model('module/antispambycleantalk');
+		$this->model_module_antispambycleantalk->uninstall();
 	}
 
 	protected function validate() {

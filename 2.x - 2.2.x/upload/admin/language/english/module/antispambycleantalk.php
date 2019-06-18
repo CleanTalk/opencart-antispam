@@ -3,7 +3,7 @@
 $_['heading_title']    = 'Antispam by Cleantalk';
 
 // Text
-$_['text_extension']   = 'Extensions';
+$_['text_module']   = 'Modules';
 $_['text_success']     = 'Success: You have modified Antispam by Cleantalk module!';
 $_['text_edit']        = 'Edit Antispam by Cleantalk Module';
 $_['text_all_category']= 'All';

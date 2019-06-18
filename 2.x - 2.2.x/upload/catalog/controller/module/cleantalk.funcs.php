@@ -3,7 +3,7 @@ require_once DIR_APPLICATION . '/controller/module/cleantalk.class.php';
 
 class CleantalkFuncs
 {
-    const ENGINE = 'opencart-15';
+    const ENGINE = 'opencart-16';
 
     private $ct_access_key = '';
 

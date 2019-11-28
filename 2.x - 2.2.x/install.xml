@@ -31,6 +31,32 @@
             $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
         </operation>           
     </file>
+    <file path="catalog/controller/affiliate/register.php">
+        <operation>
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[if (empty($this->error))
+        {
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+            {
+                require_once DIR_APPLICATION . 'controller/module/cleantalk.funcs.php';
+                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
+                if ($ct_result['allow'] == 0)
+                    $this->error['warning'] = $ct_result['comment'];
+            }
+
+
+
+    }
+
+]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[public function index() {]]></search>
+            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/module/cleantalk.funcs.php';
+            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
+        </operation>
+    </file>
     <file path="catalog/controller/checkout/register.php">        
         <operation> 
             <search><![CDATA[// Customer Group]]></search>
@@ -125,6 +151,12 @@
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
+    </file>
+    <file path="catalog/view/theme/*/template/affiliate/register.tpl">
+        <operation>
+            <search><![CDATA[</form>]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+        </operation>
     </file>
         <file path="catalog/view/theme/*/template/checkout/checkout.tpl">        
         <operation> 

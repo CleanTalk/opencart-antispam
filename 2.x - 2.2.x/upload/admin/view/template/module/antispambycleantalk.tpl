@@ -26,7 +26,7 @@
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-store" class="form-horizontal">
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-enable"><span data-toggle="tooltip" title="<?php echo $entry_help_enable; ?>"><?php echo $entry_enable; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-enable"><span data-toggle="tooltip" title="<?php echo $help_enable; ?>"><?php echo $entry_enable; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_status" id="antispambycleantalk-enable" class="form-control">
           <?php if ($module_antispambycleantalk_status) { ?>          
@@ -40,7 +40,7 @@
                 </div>
             </div>
       <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-check_registrations"><span data-toggle="tooltip" title="<?php echo $entry_help_check_registrations; ?>"><?php echo $entry_check_registrations; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_registrations"><span data-toggle="tooltip" title="<?php echo $help_check_registrations; ?>"><?php echo $entry_check_registrations; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_check_registrations" id="antispambycleantalk-check_registrations" class="form-control">
           <?php if ($module_antispambycleantalk_check_registrations) { ?>
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-check_orders"><span data-toggle="tooltip" title="<?php echo $entry_help_check_orders; ?>"><?php echo $entry_check_orders; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_orders"><span data-toggle="tooltip" title="<?php echo $help_check_orders; ?>"><?php echo $entry_check_orders; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_check_orders" id="antispambycleantalk-check_orders" class="form-control">
           <?php if ($module_antispambycleantalk_check_orders) { ?>
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-check_contact_form"><span data-toggle="tooltip" title="<?php echo $entry_help_check_contact_form; ?>"><?php echo $entry_check_contact_form; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_contact_form"><span data-toggle="tooltip" title="<?php echo $help_check_contact_form; ?>"><?php echo $entry_check_contact_form; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_check_contact_form" id="antispambycleantalk-check_contact_form" class="form-control">
           <?php if ($module_antispambycleantalk_check_contact_form) { ?>
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-check_reviews"><span data-toggle="tooltip" title="<?php echo $entry_help_check_reviews; ?>"><?php echo $entry_check_reviews; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_reviews"><span data-toggle="tooltip" title="<?php echo $help_check_reviews; ?>"><?php echo $entry_check_reviews; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_check_reviews" id="antispambycleantalk-check_reviews" class="form-control">
           <?php if ($module_antispambycleantalk_check_reviews) { ?>
@@ -97,7 +97,7 @@
                 </div>
             </div>                        
       <div class="form-group">
-                <label class="col-sm-2 control-label" for="antispambycleantalk-access_key"><span data-toggle="tooltip" title="<?php echo $entry_help_access_key; ?>"><?php echo $entry_access_key; ?></span></label>
+                <label class="col-sm-2 control-label" for="antispambycleantalk-access_key"><span data-toggle="tooltip" title="<?php echo $help_access_key; ?>"><?php echo $entry_access_key; ?></span></label>
                 <div class="col-sm-10">
                     <input type="text" name="module_antispambycleantalk_access_key" value="<?php echo $module_antispambycleantalk_access_key; ?>" placeholder="<?php echo $entry_access_key; ?>" id="antispambycleantalk-access_key" class="form-control" />
                 </div>

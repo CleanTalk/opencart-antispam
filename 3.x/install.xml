@@ -168,6 +168,47 @@
 
 ]]></add>
         </operation>          
+    </file>
+    <file path="catalog/controller/common/header.php">        
+        <operation> 
+            <search><![CDATA[return $this->load->view('common/header', $data);]]></search>
+            <add position="before"><![CDATA[if (empty($this->error))
+        {
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw'))
+            {
+                require_once DIR_APPLICATION . 'controller/extension/module/CleantalkSFW.php';
+                $is_sfw_check  = true;
+                $sfw           = new CleantalkSFW($this->db, DB_PREFIX);
+                $sfw->ip_array = (array) CleantalkSFW::ip_get(array('real'), true);  
+                foreach ($sfw->ip_array as $key => $value)
+                {
+                    if (isset($_COOKIE['ct_sfw_pass_key']) && $_COOKIE['ct_sfw_pass_key'] == md5($value . $this->config->get('module_antispambycleantalk_access_key')))
+                    {
+                        $is_sfw_check = false;
+
+                        if (isset($_COOKIE['ct_sfw_passed']))
+                        {
+                            @setcookie('ct_sfw_passed'); //Deleting cookie
+                            $sfw->sfw_update_logs($value, 'passed');
+                        }
+                    }
+                }
+                unset($key, $value);
+
+                if ($is_sfw_check)
+                {
+                    $sfw->check_ip();
+                    if ($sfw->result)
+                    {
+                        $sfw->sfw_update_logs($sfw->blocked_ip, 'blocked');
+                        $sfw->sfw_die($this->config->get('module_antispambycleantalk_access_key'));
+                    }
+                }
+            }                   
+        }
+
+]]></add>
+        </operation>          
     </file>      
     <file path = "catalog/controller/checkout/checkout.php">
         <operation> 

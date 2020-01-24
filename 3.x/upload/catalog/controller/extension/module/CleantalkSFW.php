@@ -1,4 +1,5 @@
 <?php
+require_once 'CleantalkHelper.php';
 
 /*
  * CleanTalk SpamFireWall base class

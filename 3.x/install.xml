@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>1.7</version>
+    <version>1.8</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
@@ -216,7 +216,7 @@
         <file path="catalog/view/theme/*/template/common/header.twig">
         <operation>
             <search><![CDATA[{% for script in scripts %}]]></search>
-            <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.6" type="text/javascript"></script>]]></add>            
+            <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.8" type="text/javascript"></script>]]></add>            
         </operation>
     </file>    
 </modification>

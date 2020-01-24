@@ -1,9 +1,12 @@
 <?php
-require_once DIR_APPLICATION . '/controller/module/cleantalk.class.php';
+require_once DIR_APPLICATION . '/controller/extension/module/Cleantalk.php';
+require_once DIR_APPLICATION . '/controller/extension/module/CleantalkRequest.php';
+require_once DIR_APPLICATION . '/controller/extension/module/CleantalkResponse.php';
+require_once DIR_APPLICATION . '/controller/extension/module/CleantalkHelper.php';
 
 class CleantalkFuncs
 {
-    const ENGINE = 'opencart-17';
+    const ENGINE = 'opencart-18';
 
     private $ct_access_key = '';
 
@@ -87,7 +90,9 @@ class CleantalkFuncs
         $ct->server_url = 'http://moderate.cleantalk.org';          
         $ct_request = new CleantalkRequest();
         $ct_request->auth_key = $this->ct_access_key;
-        $ct_request->sender_ip = $ct->cleantalk_get_real_ip();
+        $ct_request->sender_ip       = CleantalkHelper::ip_get(array('real'), false);
+        $ct_request->x_forwarded_for = CleantalkHelper::ip_get(array('x_forwarded_for'), false);
+        $ct_request->x_real_ip       = CleantalkHelper::ip_get(array('x_real_ip'), false);
         $ct_request->agent = self::ENGINE;
         $ct_request->js_on = $js_on;
         $ct_request->sender_info = $sender_info;

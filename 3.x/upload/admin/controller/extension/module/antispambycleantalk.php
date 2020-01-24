@@ -3,6 +3,8 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 	private $error = array();
 
 	public function index() {
+		$this->install();
+		
 		$this->load->language('extension/module/antispambycleantalk');
 
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -68,7 +70,12 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 			$data['module_antispambycleantalk_check_reviews'] = $this->request->post['module_antispambycleantalk_check_reviews'];
 		} else {
 			$data['module_antispambycleantalk_check_reviews'] = $this->config->get('module_antispambycleantalk_check_reviews');
-		}				
+		}
+		if (isset($this->request->post['module_antispambycleantalk_enable_sfw'])) {
+			$data['module_antispambycleantalk_enable_sfw'] = $this->request->post['module_antispambycleantalk_enable_sfw'];
+		} else {
+			$data['module_antispambycleantalk_enable_sfw'] = $this->config->get('module_antispambycleantalk_enable_sfw');
+		}					
 		if (isset($this->request->post['module_antispambycleantalk_access_key'])) {
 			$data['module_antispambycleantalk_access_key'] = $this->request->post['module_antispambycleantalk_access_key'];
 		} elseif($this->config->get('module_antispambycleantalk_access_key')) {
@@ -85,6 +92,8 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 	}
 
 	public function install(){
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "cleantalk_sfw` (`network` int(10) unsigned NOT NULL, `mask` int(10) unsigned NOT NULL, KEY `network` (`network`))");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "cleantalk_sfw_logs` (`ip` varchar(15) NOT NULL, `all_entries` int(11) NOT NULL, `blocked_entries` int(11) NOT NULL, `entries_timestamp` int(11) NOT NULL, PRIMARY KEY `ip` (`ip`))");
 		/*$check = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` LIKE 'antispambycleantalk'");
 		if(!$check->num_rows){
 			$this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD `antispambycleantalk` VARCHAR(255) NULL");
@@ -94,8 +103,9 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 
 	public function uninstall(){
 		$this->load->model('setting/setting');
-
 		$this->model_setting_setting->deleteSetting('module_antispambycleantalk');
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "cleantalk_sfw`");
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "cleantalk_sfw_logs`");
 	}
 
 	protected function validate() {

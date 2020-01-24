@@ -12,6 +12,14 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
 		$this->load->model('setting/setting');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			if (isset($this->request->post['module_antispambycleantalk_enable_sfw']) && isset($this->request->post['module_antispambycleantalk_access_key'])) {
+				require_once DIR_APPLICATION . '../catalog/controller/extension/module/CleantalkSFW.php';
+				$sfw = new CleantalkSFW($this->db, DB_PREFIX);
+				$sfw->sfw_update($this->request->post['module_antispambycleantalk_access_key']);
+				$sfw->send_logs($this->request->post['module_antispambycleantalk_access_key']);
+				$this->request->post['module_antispambycleantalk_int_sfw_last_check'] = time();
+				$this->request->post['module_antispambycleantalk_int_sfw_last_send_logs'] = time();
+			}
 			$this->model_setting_setting->editSetting('module_antispambycleantalk', $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');

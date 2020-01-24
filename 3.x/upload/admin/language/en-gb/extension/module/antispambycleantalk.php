@@ -17,12 +17,6 @@ $_['entry_check_reviews']    = 'Check reviews';
 $_['entry_enable_sfw']    = 'Enable SpamFireWall';
 $_['entry_access_key']   = 'Access key';
 
-//Internal data
-$_['int_sfw_check_interval'] = 86400;
-$_['int_sfw_last_check'] = 0;
-$_['int_sfw_last_send_logs'] = 0;
-$_['int_sfw_send_logs_interval'] = 3600;
-
 // Help
 $_['help_enable']         = 'Enable Antispam by Cleantalk.';
 $_['help_check_registrations']        = 'Antispam by Cleantalk will check registrations on your website';

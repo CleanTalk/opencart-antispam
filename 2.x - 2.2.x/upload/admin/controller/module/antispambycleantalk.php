@@ -10,6 +10,14 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 		$this->load->model('setting/setting');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			if (isset($this->request->post['module_antispambycleantalk_enable_sfw']) && isset($this->request->post['module_antispambycleantalk_access_key'])) {
+				require_once DIR_APPLICATION . '../catalog/controller/extension/module/CleantalkSFW.php';
+				$sfw = new CleantalkSFW($this->db, DB_PREFIX);
+				$sfw->sfw_update($this->request->post['module_antispambycleantalk_access_key']);
+				$sfw->send_logs($this->request->post['module_antispambycleantalk_access_key']);
+				$this->request->post['module_antispambycleantalk_int_sfw_last_check'] = time();
+				$this->request->post['module_antispambycleantalk_int_sfw_last_send_logs'] = time();
+			}
 			$this->model_setting_setting->editSetting('module_antispambycleantalk', $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -84,13 +92,15 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 		$this->response->setOutput($this->load->view('module/antispambycleantalk.tpl', $data));
 	}
 	public function install(){
-		$this->load->model('module/antispambycleantalk');
-		$this->model_module_antispambycleantalk->install();
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "cleantalk_sfw` (`network` int(10) unsigned NOT NULL, `mask` int(10) unsigned NOT NULL, KEY `network` (`network`))");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "cleantalk_sfw_logs` (`ip` varchar(15) NOT NULL, `all_entries` int(11) NOT NULL, `blocked_entries` int(11) NOT NULL, `entries_timestamp` int(11) NOT NULL, PRIMARY KEY `ip` (`ip`))");
 	}
 
 	public function uninstall(){
-		$this->load->model('module/antispambycleantalk');
-		$this->model_module_antispambycleantalk->uninstall();
+		$this->load->model('setting/setting');
+		$this->model_setting_setting->deleteSetting('module_antispambycleantalk');
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "cleantalk_sfw`");
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "cleantalk_sfw_logs`");
 	}
 
 	protected function validate() {

@@ -95,6 +95,20 @@
           <?php } ?>
                   </select>
                 </div>
+            </div> 
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="antispambycleantalk-enable_sfw"><span data-toggle="tooltip" title="<?php echo $help_enable_sfw; ?>"><?php echo $entry_enable_sfw; ?></span></label>
+                <div class="col-sm-10">
+                  <select name="module_antispambycleantalk_enable_sfw" id="antispambycleantalk-enable_sfw" class="form-control">
+          <?php if ($module_antispambycleantalk_enable_sfw) { ?>
+          <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+          <option value="0"><?php echo $text_disabled; ?></option>
+          <?php } else { ?>
+          <option value="1"><?php echo $text_enabled; ?></option>
+          <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+          <?php } ?>
+                  </select>
+                </div>
             </div>                        
       <div class="form-group">
                 <label class="col-sm-2 control-label" for="antispambycleantalk-access_key"><span data-toggle="tooltip" title="<?php echo $help_access_key; ?>"><?php echo $entry_access_key; ?></span></label>

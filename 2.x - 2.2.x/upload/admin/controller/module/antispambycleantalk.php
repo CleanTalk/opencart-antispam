@@ -76,6 +76,11 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 			$data['module_antispambycleantalk_check_reviews'] = $this->request->post['module_antispambycleantalk_check_reviews'];
 		} else {
 			$data['module_antispambycleantalk_check_reviews'] = $this->config->get('module_antispambycleantalk_check_reviews');
+		}
+		if (isset($this->request->post['module_antispambycleantalk_enable_sfw'])) {
+			$data['module_antispambycleantalk_enable_sfw'] = $this->request->post['module_antispambycleantalk_enable_sfw'];
+		} else {
+			$data['module_antispambycleantalk_enable_sfw'] = $this->config->get('module_antispambycleantalk_enable_sfw');
 		}				
 		if (isset($this->request->post['module_antispambycleantalk_access_key'])) {
 			$data['module_antispambycleantalk_access_key'] = $this->request->post['module_antispambycleantalk_access_key'];

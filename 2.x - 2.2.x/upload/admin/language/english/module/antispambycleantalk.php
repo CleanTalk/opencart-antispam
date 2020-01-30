@@ -14,6 +14,7 @@ $_['entry_check_registrations']       = 'Check registrations';
 $_['entry_check_orders']    = 'Check orders';
 $_['entry_check_contact_form']    = 'Check contact form';
 $_['entry_check_reviews']    = 'Check reviews';
+$_['entry_enable_sfw']    = 'Enable SpamFireWall';
 $_['entry_access_key']   = 'Access key';
 
 // Help
@@ -22,6 +23,7 @@ $_['help_check_registrations']        = 'Antispam by Cleantalk will check regist
 $_['help_check_orders']     = 'Antispam by Cleantalk will check orders on your website';
 $_['help_check_contact_form']     = 'Antispam by Cleantalk will check contact form on your website';
 $_['help_check_reviews']     = 'Antispam by Cleantalk will check product reviews on your website';
+$_['help_enable_sfw']     = 'Reduces webserver load and prevents bots to access the website';
 $_['help_access_key']    = 'To get an access key, please visit: https://cleantalk.org';
 
 // Error

@@ -139,7 +139,7 @@
         {
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw'))
             {
-                require_once DIR_APPLICATION . 'controller/extension/module/CleantalkSFW.php';
+                require_once DIR_APPLICATION . 'controller/module/CleantalkSFW.php';
                 $is_sfw_check  = true;
                 $sfw           = new CleantalkSFW($this->db, DB_PREFIX);
                 $sfw->ip_array = (array) CleantalkSFW::ip_get(array('real'), true);  

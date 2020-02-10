@@ -1,8 +1,8 @@
 <?php
-require_once DIR_APPLICATION . '/controller/extension/module/Cleantalk.php';
-require_once DIR_APPLICATION . '/controller/extension/module/CleantalkRequest.php';
-require_once DIR_APPLICATION . '/controller/extension/module/CleantalkResponse.php';
-require_once DIR_APPLICATION . '/controller/extension/module/CleantalkHelper.php';
+require_once DIR_APPLICATION . '/controller/module/Cleantalk.php';
+require_once DIR_APPLICATION . '/controller/module/CleantalkRequest.php';
+require_once DIR_APPLICATION . '/controller/module/CleantalkResponse.php';
+require_once DIR_APPLICATION . '/controller/module/CleantalkHelper.php';
 
 class CleantalkFuncs
 {

@@ -182,6 +182,7 @@
                 } 
                 if (count($settings_array) > 0) 
                 {
+                    $this->load->model('setting/setting');
                     $this->model_setting_setting->editSetting('module_antispambycleantalk', $settings_array);
                 }               
             }                   

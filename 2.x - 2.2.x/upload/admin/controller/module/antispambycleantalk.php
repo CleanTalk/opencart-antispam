@@ -3,6 +3,8 @@ class ControllerModuleAntispamByCleantalk extends Controller {
 	private $error = array();
 
 	public function index() {
+		$this->install();
+		
 		$data = $this->load->language('module/antispambycleantalk');
 
 		$this->document->setTitle($this->language->get('heading_title'));

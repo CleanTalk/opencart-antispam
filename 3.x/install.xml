@@ -5,43 +5,43 @@
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
-    <file path="catalog/controller/account/register.php">        
+    <file path="catalog/controller/{{affiliate,account,checkout}/register.php}">
         <operation> 
             <search><![CDATA[return !$this->error;]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+            <add position="before"><![CDATA[
+            if (empty($this->error))
             {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));            
-                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
-                if (defined('JOURNAL3_ACTIVE')) {
-                    if (\Journal3\Utils\Request::isAjax()) {
-                        $this->error['warning'] = $ct_result['comment'];
-                        echo json_encode(array(
-                            'status' => 'error',
-                            'response' => $this->error
-                        ), true);
-
-                        exit;
-                    }
-                } else {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
+                    $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                    $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
                     if ($ct_result['allow'] == 0)
-                        $this->error['warning'] = $ct_result['comment'];                 
+                    {
+                        $this->error['warning'] = $ct_result['comment'];
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
                 }
-           
             }
-
-
-      
-    }
-
-]]></add>
+            ]]></add>
         </operation> 
-                <operation> 
+        <operation>
             <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
+            <add position="after"><![CDATA[
+            require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
+            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+            $ct_funcs->setCookie();
+            ]]></add>
         </operation>           
     </file>
     <file path="catalog/controller/checkout/guest.php">        
@@ -219,5 +219,30 @@
             <script src="catalog/view/javascript/antispambycleantalk.js?v=1.8" type="text/javascript"></script>
             ]]></add>
         </operation>
-    </file>    
+    </file>
+    <file path="catalog/controller/journal3/checkout.php">
+        <operation>
+            <search index="0"><![CDATA[return $error;]]></search>
+            <add position="before"><![CDATA[
+            if( empty($error) ) {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders')) {
+                    require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
+                    $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                    $ct_result = $ct_funcs->onSpamCheck('register', $this->request->post['order_data']);
+                    if ($ct_result['allow'] == 0) {
+                        $error['email'] = $ct_result['comment'];
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/journal3/checkout/register.twig">
+        <operation>
+            <search regex="true" index="0"><![CDATA[~$~]]></search>
+            <add position="after"><![CDATA[
+            <input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />
+            ]]></add>
+        </operation>
+    </file>
 </modification>

@@ -219,8 +219,9 @@
                 } 
                 if (count($settings_array) > 0) 
                 {
-                    $this->load->model('setting/setting');
-                    $this->model_setting_setting->editSetting('module_antispambycleantalk', $settings_array);
+                    foreach ( $settings_array as $setting_name => $setting_value) {
+                        $this->db->query( 'UPDATE `' . DB_PREFIX . 'setting` SET `value` = "' . $setting_value . '" WHERE `key` = "' . $setting_name . '"' );
+                    }
                 }               
             }                   
         }

@@ -239,8 +239,8 @@
     </file>
     <file path="catalog/view/theme/*/template/journal3/checkout/register.twig">
         <operation>
-            <search regex="true" index="0"><![CDATA[~$~]]></search>
-            <add position="after"><![CDATA[
+            <search index="0"><![CDATA[<div]]></search>
+            <add position="before"><![CDATA[
             <input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />
             ]]></add>
         </operation>

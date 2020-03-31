@@ -196,7 +196,7 @@
             ]]></add>
         </operation>
     </file>
-    <file path="catalog/view/theme/*/template/product/product.twig">
+    <file path="catalog/view/theme/*/template/{product/product.twig,journal3/module/product_blocks_reviews.twig}">
         <operation>
             <search index="0"><![CDATA[<form class="form-horizontal" id="form-review">]]></search>
             <add position="after"><![CDATA[

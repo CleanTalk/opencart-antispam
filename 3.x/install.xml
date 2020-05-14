@@ -124,7 +124,7 @@
             <add position="before"><![CDATA[
             if (empty($this->error))
             {
-                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw'))
+                if ( $this->request->server['REQUEST_METHOD'] == 'GET' && $this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw') )
                 {
                     require_once DIR_APPLICATION . 'controller/extension/module/CleantalkSFW.php';
                     $is_sfw_check  = true;

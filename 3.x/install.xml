@@ -118,6 +118,26 @@
             ]]></add>
         </operation>          
     </file>
+    <file path="catalog/controller/account/return.php">
+        <operation>
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (!isset($this->error['email']))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
+                {
+                    require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
+                    $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
+                    $ct_result = $ct_funcs->onSpamCheck('return',$this->request->post);
+                    if ($ct_result['allow'] == 0)
+                    {
+                        $this->error['warning'] = $ct_result['comment'];
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
     <file path="catalog/controller/common/header.php">        
         <operation> 
             <search><![CDATA[return $this->load->view('common/header', $data);]]></search>
@@ -188,7 +208,7 @@
             ]]></add>
         </operation>  
     </file>
-    <file path="catalog/view/theme/*/template/{{account,affiliate}/register.twig,information/contact.twig}">
+    <file path="catalog/view/theme/*/template/{{account,affiliate}/register.twig,account/return_form.twig,information/contact.twig}">
         <operation>
             <search index="0"><![CDATA[<form ]]></search>
             <add position="after"><![CDATA[

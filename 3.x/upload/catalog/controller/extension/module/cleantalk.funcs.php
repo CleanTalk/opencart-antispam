@@ -121,6 +121,12 @@ class CleantalkFuncs
                 $ct_request->message = trim($data['text']);
                 $ct_result = $ct->isAllowMessage($ct_request);
                 break;
+            case 'return':
+                $ct_request->sender_email = $data['email'];    
+                $ct_request->sender_nickname = trim($data['firstname']) . ' ' . trim($data['lastname']);
+                $ct_request->message = trim($data['comment']);
+                $ct_result = $ct->isAllowMessage($ct_request);
+                break;
         }
         if (isset($ct_result))
         {

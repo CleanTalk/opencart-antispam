@@ -36,11 +36,13 @@
             <search><![CDATA[return !$this->error;]]></search>
             <add position="before"><![CDATA[if (empty($this->error))
         {
+            //ToDo
+            //Add option for return
             if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
             {
                 require_once DIR_APPLICATION . 'controller/module/cleantalk.funcs.php';
                 $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
+                $ct_result = $ct_funcs->onSpamCheck('return',$this->request->post);
                 if ($ct_result['allow'] == 0)
                     $this->error['warning'] = $ct_result['comment'];
             }

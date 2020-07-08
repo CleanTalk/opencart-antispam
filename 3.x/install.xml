@@ -124,6 +124,8 @@
             <add position="before"><![CDATA[
             if (!isset($this->error['email']))
             {
+                //ToDo
+                //Add option for return
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
                 {
                     require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';

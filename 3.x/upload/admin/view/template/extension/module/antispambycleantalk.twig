@@ -57,15 +57,29 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="antispambycleantalk-check_orders"><span data-toggle="tooltip" title="{{ help_check_orders }}">{{ entry_check_orders }}</span></label>
                 <div class="col-sm-10">
-                  <select name="module_antispambycleantalk_check_orders" id="antispambycleantalk-check_orders" class="form-control">
-          {% if module_antispambycleantalk_check_orders %}
-          <option value="1" selected="selected">{{ text_yes }}</option>
-          <option value="0">{{ text_no }}</option>
-          {% else %}
-          <option value="1">{{ text_yes }}</option>
-          <option value="0" selected="selected">{{ text_no }}</option>
-          {% endif %}
-                  </select>
+                    <select name="module_antispambycleantalk_check_orders" id="antispambycleantalk-check_orders" class="form-control">
+                        {% if module_antispambycleantalk_check_orders %}
+                            <option value="1" selected="selected">{{ text_yes }}</option>
+                            <option value="0">{{ text_no }}</option>
+                        {% else %}
+                            <option value="1">{{ text_yes }}</option>
+                            <option value="0" selected="selected">{{ text_no }}</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_return"><span data-toggle="tooltip" title="{{ help_check_return }}">{{ entry_check_return }}</span></label>
+                <div class="col-sm-10">
+                    <select name="module_antispambycleantalk_check_return" id="antispambycleantalk-check_return" class="form-control">
+                        {% if module_antispambycleantalk_check_return %}
+                            <option value="1" selected="selected">{{ text_yes }}</option>
+                            <option value="0">{{ text_no }}</option>
+                        {% else %}
+                            <option value="1">{{ text_yes }}</option>
+                            <option value="0" selected="selected">{{ text_no }}</option>
+                        {% endif %}
+                    </select>
                 </div>
             </div>
             <div class="form-group">

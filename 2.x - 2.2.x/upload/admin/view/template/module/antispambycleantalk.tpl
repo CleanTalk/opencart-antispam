@@ -69,6 +69,20 @@
                 </div>
             </div>
             <div class="form-group">
+                <label class="col-sm-2 control-label" for="antispambycleantalk-check_return"><span data-toggle="tooltip" title="<?php echo $help_check_return; ?>"><?php echo $entry_check_return; ?></span></label>
+                <div class="col-sm-10">
+                    <select name="module_antispambycleantalk_check_return" id="antispambycleantalk-check_return" class="form-control">
+                        <?php if ($module_antispambycleantalk_check_return) { ?>
+                        <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                        <option value="0"><?php echo $text_disabled; ?></option>
+                        <?php } else { ?>
+                        <option value="1"><?php echo $text_enabled; ?></option>
+                        <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-2 control-label" for="antispambycleantalk-check_contact_form"><span data-toggle="tooltip" title="<?php echo $help_check_contact_form; ?>"><?php echo $entry_check_contact_form; ?></span></label>
                 <div class="col-sm-10">
                   <select name="module_antispambycleantalk_check_contact_form" id="antispambycleantalk-check_contact_form" class="form-control">

@@ -5,7 +5,7 @@ var ct_date = new Date(),
 	ctMouseDataCounter = 0;
 
 function ctSetCookieSec(c_name, value) {
-	document.cookie = c_name + "=" + encodeURIComponent(value) + "; path=/";
+	document.cookie = c_name + "=" + encodeURIComponent(value) + "; path=/; samesite=lax";
 }
 
 function apbct_attach_event_handler(elem, event, callback){
@@ -117,3 +117,12 @@ function apbct_ready(){
 	}, 1000);
 }
 apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
+
+// Include JS checking code to ajax requests
+jQuery(document).ajaxSend(function(event, xhr, settings) {
+	if( undefined !== settings.data ) {
+		if( settings.data.includes( 'account=register' ) ) {
+			settings.data += '&ct_checkjs=' + $('#ct_checkjs').val();
+		}
+	}
+});

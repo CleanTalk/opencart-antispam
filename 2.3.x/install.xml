@@ -1,238 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>1.9</version>
+    <version>2.0</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
-	<file path="catalog/controller/account/register.php">        
-		<operation> 
-            <search><![CDATA[return !$this->error;]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));            
-                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $this->error['warning'] = $ct_result['comment'];            
-            }
-
-
-      
-    }
-
-]]></add>
-        </operation> 
-                <operation> 
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
-        </operation>           
-    </file>
-    <file path="catalog/controller/account/return.php">
+    <!-- Global lib injection -->
+    <file path="catalog/controller/startup/startup.php">
         <operation>
-            <search><![CDATA[return !$this->error;]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_return'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('return',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $this->error['warning'] = $ct_result['comment'];
-            }
-
-
-
-    }
-
-]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
+            <search><![CDATA[$this->registry->set('openbay', new Openbay($this->registry));]]></search>
+            <add position="after"><![CDATA[
+            // AntiSpam By Cleantalk
+            $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
+			$this->apbct->init( $this->config );
+            ]]></add>
         </operation>
     </file>
-    <file path="catalog/controller/affiliate/register.php">
+    <!-- General actions injection -->
+    <file path="catalog/controller/common/header.php">
+        <!-- JS injection -->
         <operation>
-            <search><![CDATA[return !$this->error;]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('register',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $this->error['warning'] = $ct_result['comment'];
-            }
-
-
-
-    }
-
-]]></add>
+            <search><![CDATA[$data['scripts'] = $this->document->getScripts();]]></search>
+            <add position="before"><![CDATA[
+            $ver = '?v=' . $this->apbct::VERSION;
+            $this->document->addScript( 'catalog/view/javascript/antispambycleantalk.js' . $ver );
+            $this->apbct->setCookie();
+            ]]></add>
         </operation>
+        <!-- SFW and RC actions here -->
         <operation>
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
-        </operation>
-    </file>
-    <file path="catalog/controller/checkout/register.php">        
-        <operation> 
-            <search><![CDATA[// Customer Group]]></search>
-            <add position="before"><![CDATA[if (empty($json['error']))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $json['error']['warning'] = $ct_result['comment'];             
-            }
-               
-    }
-
-]]></add>
-        </operation>          
-    </file>
-    <file path="catalog/controller/checkout/guest.php">        
-        <operation> 
-            <search><![CDATA[// Customer Group]]></search>
-            <add position="before"><![CDATA[if (empty($json['error']))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('order',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $json['error']['warning'] = $ct_result['comment'];            
-            }           
-    }
-
-]]></add>
-        </operation>          
-    </file> 
-    <file path="catalog/controller/product/product.php">        
-        <operation> 
-            <search><![CDATA[if (!isset($json['error'])) {]]></search>
-            <add position="before"><![CDATA[if (!isset($json['error'])) {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('comment',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $json['error'] = $ct_result['comment'];            
-            }              
-        }]]></add>
-        </operation> 
-                <operation> 
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
-        </operation>           
-    </file>
-    <file path="catalog/controller/information/contact.php">        
-        <operation> 
-            <search><![CDATA[return !$this->error;]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
-            {
-                require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-                $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key'));
-                $ct_result = $ct_funcs->onSpamCheck('contact',$this->request->post);
-                if ($ct_result['allow'] == 0)
-                    $this->error['enquiry'] = $ct_result['comment'];            
-            }                   
-        }
-
-]]></add>
-        </operation>          
-    </file>  
-    <file path="catalog/controller/common/header.php">        
-        <operation> 
             <search><![CDATA[return $this->load->view('common/header', $data);]]></search>
-            <add position="before"><![CDATA[if (empty($this->error))
-        {
-            if ( $this->request->server['REQUEST_METHOD'] == 'GET' && $this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw') )
+            <add position="before"><![CDATA[
+            if (empty($this->error))
             {
-                require_once DIR_APPLICATION . 'controller/extension/module/CleantalkSFW.php';
-                $is_sfw_check  = true;
-                $sfw           = new CleantalkSFW($this->db, DB_PREFIX);
-                $sfw->ip_array = (array) CleantalkSFW::ip_get(array('real'), true);  
-                foreach ($sfw->ip_array as $key => $value)
+                if ( $this->request->server['REQUEST_METHOD'] == 'GET' && $this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw') )
                 {
-                    if (isset($_COOKIE['ct_sfw_pass_key']) && $_COOKIE['ct_sfw_pass_key'] == md5($value . $this->config->get('module_antispambycleantalk_access_key')))
-                    {
-                        $is_sfw_check = false;
+                    if( $this->apbct->rc::check($this->config->get('module_antispambycleantalk_access_key')) ) {
+                        $this->apbct->rc->perform($this->config->get('module_antispambycleantalk_access_key'));
+                    }
 
-                        if (isset($_COOKIE['ct_sfw_passed']))
-                        {
-                            @setcookie('ct_sfw_passed'); //Deleting cookie
-                            $sfw->sfw_update_logs($value, 'passed');
+                    $this->apbct->sfw->run($this->config->get('module_antispambycleantalk_access_key'));
+
+                    $settings_array = array();
+
+                    if ($this->config->get('module_antispambycleantalk_int_sfw_last_check') && time() - $this->config->get('module_antispambycleantalk_int_sfw_last_check') > 86400)
+                    {
+                        $this->apbct->sfw->sfw_update($this->config->get('module_antispambycleantalk_access_key'));
+                        $settings_array['module_antispambycleantalk_int_sfw_last_check'] = time();
+                    }
+
+                    if ($this->config->get('module_antispambycleantalk_int_sfw_last_send_logs') && time() - $this->config->get('module_antispambycleantalk_int_sfw_last_send_logs') > 3600)
+                    {
+                        $this->apbct->sfw->logs__send($this->config->get('module_antispambycleantalk_access_key'));
+                        $settings_array['module_antispambycleantalk_int_sfw_last_send_logs'] = time();
+                    }
+                    if (count($settings_array) > 0)
+                    {
+                        foreach ( $settings_array as $setting_name => $setting_value) {
+                            $this->db->query( 'UPDATE `' . DB_PREFIX . 'setting` SET `value` = "' . $setting_value . '" WHERE `key` = "' . $setting_name . '"' );
                         }
                     }
                 }
-                unset($key, $value);
-
-                if ($is_sfw_check)
-                {
-                    $sfw->check_ip();
-                    if ($sfw->result)
-                    {
-                        $sfw->sfw_update_logs($sfw->blocked_ip, 'blocked');
-                        $sfw->sfw_die($this->config->get('module_antispambycleantalk_access_key'));
-                    }
-                }
-                $settings_array = array();
-
-                if ($this->config->get('module_antispambycleantalk_int_sfw_last_check') && time() - $this->config->get('module_antispambycleantalk_int_sfw_last_check') > 86400)
-                {
-                    $sfw->sfw_update($this->config->get('module_antispambycleantalk_access_key'));
-                    $settings_array['module_antispambycleantalk_int_sfw_last_check'] = time();
-                }
-
-                if ($this->config->get('module_antispambycleantalk_int_sfw_last_send_logs') && time() - $this->config->get('module_antispambycleantalk_int_sfw_last_send_logs') > 3600)
-                {
-                    $sfw->send_logs($this->config->get('module_antispambycleantalk_access_key'));
-                    $settings_array['module_antispambycleantalk_int_sfw_last_send_logs'] = time();
-                } 
-                if (count($settings_array) > 0) 
-                {
-                    foreach ( $settings_array as $setting_name => $setting_value) {
-                        $this->db->query( 'UPDATE `' . DB_PREFIX . 'setting` SET `value` = "' . $setting_value . '" WHERE `key` = "' . $setting_name . '"' );
-                    }
-                }               
-            }                   
-        }
-
-]]></add>
-        </operation>          
-    </file>         
-    <file path = "catalog/controller/checkout/checkout.php">
-                        <operation> 
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
-        </operation>  
+            }
+            ]]></add>
+        </operation>
     </file>
-    <file path = "catalog/controller/information/contact.php">
-                        <operation> 
-            <search><![CDATA[public function index() {]]></search>
-            <add position="after"><![CDATA[require_once DIR_APPLICATION . 'controller/extension/module/cleantalk.funcs.php';
-            $ct_funcs = new CleantalkFuncs($this->config->get('module_antispambycleantalk_access_key')); $ct_funcs->setCookie();]]></add>
-        </operation>  
-    </file>    
-        <file path="catalog/view/theme/*/template/account/register.tpl">        
+    <!-- Spam checking on account/register -->
+	<file path="catalog/controller/account/register.php">        
+		<operation> 
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (empty($this->error))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $this->error['warning'] = $this->apbct->get_block_comment();
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on affiliate/register -->
+    <file path="catalog/controller/affiliate/register.php">
+        <operation>
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (empty($this->error))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $this->error['warning'] = $this->apbct->get_block_comment();
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on checkout/register -->
+    <file path="catalog/controller/checkout/register.php">
+        <operation>
+            <search><![CDATA[// Customer Group]]></search>
+            <add position="before"><![CDATA[
+            if (empty($json['error']))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $json['error']['warning'] = $ct_result['comment'];
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on information/contact -->
+    <file path="catalog/controller/information/contact.php">
+        <operation>
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (empty($this->error))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $this->error['enquiry'] = $this->apbct->get_block_comment();
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on checkout/guest -->
+    <file path="catalog/controller/checkout/guest.php">
+        <operation>
+            <search><![CDATA[// Customer Group]]></search>
+            <add position="before"><![CDATA[
+            if (empty($json['error']))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                        $json['error']['warning'] = $this->apbct->get_block_comment();
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on product/product -->
+    <file path="catalog/controller/product/product.php">
+        <operation>
+            <search><![CDATA[if (!isset($json['error'])) {]]></search>
+            <add position="before"><![CDATA[
+            if (empty($json['error']))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                        $json['error'] = $this->apbct->get_block_comment();
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on account/return -->
+    <file path="catalog/controller/account/return.php">
+        <operation>
+            <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (!isset($this->error['email']))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_return'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                        $this->error['warning'] = $this->apbct->get_block_comment();
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Hidden fields -->
+    <file path="catalog/view/theme/*/template/account/register.tpl">
         <operation> 
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
@@ -250,13 +248,13 @@
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
     </file>
-        <file path="catalog/view/theme/*/template/product/product.tpl">        
+    <file path="catalog/view/theme/*/template/product/product.tpl">
         <operation> 
             <search><![CDATA[<div class="buttons clearfix">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
     </file>
-        <file path="catalog/view/theme/*/template/information/contact.tpl">        
+    <file path="catalog/view/theme/*/template/information/contact.tpl">
         <operation> 
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
@@ -268,7 +266,7 @@
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
     </file>
-        <file path="catalog/view/theme/*/template/common/header.tpl">
+    <file path="catalog/view/theme/*/template/common/header.tpl">
         <operation>
             <search><![CDATA[<?php foreach ($scripts as $script) { ?>]]></search>
             <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.9" type="text/javascript"></script>]]></add>

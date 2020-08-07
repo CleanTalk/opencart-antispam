@@ -1,4 +1,4 @@
-var ct_date = new Date(), 
+var ct_date = new Date(),
 	ctTimeMs = new Date().getTime(),
 	ctMouseEventTimerFlag = true, //Reading interval flag
 	ctMouseData = [],
@@ -38,7 +38,7 @@ var ctFunctionFirstKey = function output(event){
 var ctMouseReadInterval = setInterval(function(){
 	ctMouseEventTimerFlag = true;
 }, 150);
-	
+
 //Writting interval
 var ctMouseWriteDataInterval = setInterval(function(){
 	ctSetCookieSec("apbct_pointer_data", JSON.stringify(ctMouseData));
@@ -47,13 +47,13 @@ var ctMouseWriteDataInterval = setInterval(function(){
 //Logging mouse position each 150 ms
 var ctFunctionMouseMove = function output(event){
 	if(ctMouseEventTimerFlag == true){
-		
+
 		ctMouseData.push([
 			Math.round(event.pageY),
 			Math.round(event.pageX),
 			Math.round(new Date().getTime() - ctTimeMs)
 		]);
-		
+
 		ctMouseDataCounter++;
 		ctMouseEventTimerFlag = false;
 		if(ctMouseDataCounter >= 50){
@@ -66,7 +66,7 @@ var ctFunctionMouseMove = function output(event){
 function ctMouseStopData(){
 	apbct_remove_event_handler(window, "mousemove", ctFunctionMouseMove);
 	clearInterval(ctMouseReadInterval);
-	clearInterval(ctMouseWriteDataInterval);				
+	clearInterval(ctMouseWriteDataInterval);
 }
 
 //Stop key listening function
@@ -85,34 +85,37 @@ function apbct_ready(){
 	ctSetCookieSec("apbct_visible_fields_count", 0);
 	if (document.getElementById("ct_checkjs"))
 		document.getElementById("ct_checkjs").value = ct_date.getFullYear();
+
 	setTimeout(function(){
+
 		for(var i = 0; i < document.forms.length; i++){
 			var form = document.forms[i];
+
+			//Exclusion for forms
+			/* For example
+			if (
+				form.classList.contains('slp_search_form') || //StoreLocatorPlus form
+				form.parentElement.classList.contains('mec-booking') ||
+				form.action.toString().indexOf('activehosted.com') || // Active Campaign
+				(form.id && form.id == 'caspioform') //Caspio Form
+			)
+				continue;
+			*/
+
 			form.onsubmit_prev = form.onsubmit;
-			form.onsubmit = function(event){
-				this.visible_fields = '';
-				this.visible_fields_count = this.elements.length;
-				for(var j = 0; j < this.elements.length; j++){
-					var elem = this.elements[j];
-					if( getComputedStyle(elem).display    == "none" ||
-						getComputedStyle(elem).visibility == "hidden" ||
-						getComputedStyle(elem).width      == "0" ||
-						getComputedStyle(elem).heigth     == "0" ||
-						getComputedStyle(elem).opacity    == "0" ||
-						elem.getAttribute("type")         == "hidden" ||
-						elem.getAttribute("type")         == "submit"
-					){
-						this.visible_fields_count--;
-					}else{
-						this.visible_fields += (this.visible_fields == "" ? "" : " ") + elem.getAttribute("name");
-					}
+			form.onsubmit = function (event) {
+
+				event.preventDefault();
+
+				apbct_collect_visible_fields_and_set_cookie(this);
+
+				// Call previous submit action
+				if (event.target.onsubmit_prev instanceof Function) {
+					setTimeout(function () {
+						event.target.onsubmit_prev.call(event.target, event);
+					}, 500);
 				}
-				ctSetCookieSec("apbct_visible_fields", this.visible_fields);
-				ctSetCookieSec("apbct_visible_fields_count", this.visible_fields_count);
-				if(this.onsubmit_prev instanceof Function){
-					this.onsubmit_prev.call(this, event);
-				}
-			}
+			};
 		}
 	}, 1000);
 }
@@ -126,3 +129,55 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
 		}
 	}
 });
+
+function apbct_collect_visible_fields_and_set_cookie(form ) {
+
+	// Get only fields
+	var inputs = [],
+		inputs_visible = '',
+		inputs_visible_count = 0,
+		inputs_with_duplicate_names = [];
+
+	for(var key in form.elements){
+		if(!isNaN(+key))
+			inputs[key] = form.elements[key];
+	}
+
+	// Filter fields
+	inputs = inputs.filter(function(elem){
+
+		// Filter fields
+		if( getComputedStyle(elem).display    === "none" ||   // hidden
+			getComputedStyle(elem).visibility === "hidden" || // hidden
+			getComputedStyle(elem).opacity    === "0" ||      // hidden
+			elem.getAttribute("type")         === "hidden" || // type == hidden
+			elem.getAttribute("type")         === "submit" || // type == submit
+			elem.value                        === ""       || // empty value
+			elem.getAttribute('name')         === null ||
+			inputs_with_duplicate_names.indexOf( elem.getAttribute('name') ) !== -1 // name already added
+		){
+			return false;
+		}
+
+		// Visible fields count
+		inputs_visible_count++;
+
+		// Filter inputs with same names for type == radio
+		if( -1 !== ['radio', 'checkbox'].indexOf( elem.getAttribute("type") )){
+			inputs_with_duplicate_names.push( elem.getAttribute('name') );
+			return false;
+		}
+
+		return true;
+	});
+
+	// Visible fields
+	inputs.forEach(function(elem, i, elements){
+		inputs_visible += " " + elem.getAttribute("name");
+	});
+	inputs_visible = inputs_visible.trim();
+
+	ctSetCookieSec("apbct_visible_fields", inputs_visible);
+	ctSetCookieSec("apbct_visible_fields_count", inputs_visible_count);
+
+}

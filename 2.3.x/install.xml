@@ -266,16 +266,4 @@
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
     </file>
-    <file path="catalog/view/theme/*/template/common/header.tpl">
-        <operation>
-            <search><![CDATA[<?php foreach ($scripts as $script) { ?>]]></search>
-            <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.9" type="text/javascript"></script>]]></add>
-        </operation>
-    </file>
-    <file path="catalog/view/theme/journal3/template/common/header.tpl">
-        <operation>
-            <search><![CDATA[<?php if ($j3->settings->get('customCodeHeader')): ?>]]></search>
-            <add position="before"><![CDATA[<script src="catalog/view/javascript/antispambycleantalk.js?v=1.9" type="text/javascript"></script>]]></add>
-        </operation>
-    </file>
 </modification>

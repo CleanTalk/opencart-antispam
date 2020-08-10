@@ -92,15 +92,14 @@ function apbct_ready(){
 			var form = document.forms[i];
 
 			//Exclusion for forms
-			/* For example
 			if (
 				form.classList.contains('slp_search_form') || //StoreLocatorPlus form
 				form.parentElement.classList.contains('mec-booking') ||
 				form.action.toString().indexOf('activehosted.com') || // Active Campaign
-				(form.id && form.id == 'caspioform') //Caspio Form
+				(form.id && form.id === 'caspioform') || //Caspio Form
+				form.elements.ct_checkjs === 'undefined' // The form does not contain the ct_ field, skip this
 			)
 				continue;
-			*/
 
 			form.onsubmit_prev = form.onsubmit;
 			form.onsubmit = function (event) {

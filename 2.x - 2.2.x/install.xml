@@ -193,7 +193,7 @@
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
-                            $json['error']['warning'] = $this->apbct->get_block_comment();
+                        $json['error'] = $this->apbct->get_block_comment();
                 }
             }
             ]]></add>

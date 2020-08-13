@@ -171,14 +171,14 @@
     <!-- Spam checking on product/product -->
     <file path="catalog/controller/product/product.php">
         <operation>
-            <search><![CDATA[// Customer Group]]></search>
+            <search><![CDATA[if (!isset($json['error'])) {]]></search>
             <add position="before"><![CDATA[
             if (empty($json['error']))
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
                 {
                     if( $this->apbct->is_spam( $this ) )
-                        $json['error']['warning'] = $this->apbct->get_block_comment();
+                        $json['error'] = $this->apbct->get_block_comment();
                 }
             }
             ]]></add>

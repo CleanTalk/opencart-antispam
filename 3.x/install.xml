@@ -65,10 +65,39 @@
             ]]></add>
         </operation>
     </file>
-    <!-- Spam checking on affiliate/register, account/register, checkout/register -->
-    <file path="catalog/controller/{{affiliate,account,checkout}/register.php}">
+    <!-- Spam checking on affiliate/register, account/register -->
+    <file path="catalog/controller/{{affiliate,account}/register.php}">
         <operation> 
             <search><![CDATA[return !$this->error;]]></search>
+            <add position="before"><![CDATA[
+            if (empty($this->error))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $this->error['warning'] = $this->apbct->get_block_comment();
+                        if (defined('JOURNAL3_ACTIVE'))
+                        {
+                            if (\Journal3\Utils\Request::isAjax())
+                            {
+                                echo json_encode(array(
+                                    'status' => 'error',
+                                    'response' => $this->error
+                                ), true);
+                                exit;
+                            }
+                        }
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Spam checking on checkout/register -->
+    <file path="catalog/controller/checkout/register.php">
+        <operation>
+            <search><![CDATA[// Customer Group]]></search>
             <add position="before"><![CDATA[
             if (empty($this->error))
             {

@@ -8,7 +8,7 @@
     <!-- Global lib injection -->
     <file path="catalog/controller/startup/startup.php">
         <operation>
-            <search><![CDATA[$this->registry->set('openbay', new Openbay($this->registry));]]></search>
+            <search><![CDATA[$this->registry->set('cart', new Cart\Cart($this->registry));]]></search>
             <add position="after"><![CDATA[
             // AntiSpam By Cleantalk
             $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );

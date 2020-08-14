@@ -210,7 +210,7 @@
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
                 {
                      if( $this->apbct->is_spam( $this ) )
-                        $error['email'] = $ct_result['comment'];
+                        $error['email'] = $this->apbct->get_block_comment();
                 }
             }
             ]]></add>

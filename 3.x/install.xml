@@ -105,7 +105,7 @@
                 {
                     if( $this->apbct->is_spam( $this ) )
                     {
-                        $this->error['warning'] = $this->apbct->get_block_comment();
+                        $json['error']['warning'] = $this->apbct->get_block_comment();
                         if (defined('JOURNAL3_ACTIVE'))
                         {
                             if (\Journal3\Utils\Request::isAjax())

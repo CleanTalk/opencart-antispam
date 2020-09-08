@@ -216,6 +216,23 @@
             ]]></add>
         </operation>
     </file>
+    <!-- Spam checking on journal3/form (contact form) -->
+    <file path="catalog/controller/journal3/form.php">
+        <operation>
+            <search index="0"><![CDATA[if ($errors) {]]></search>
+            <add position="before"><![CDATA[
+            if( ! $errors )
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
+                {
+                    if( $this->apbct->is_spam( $this ) ) {
+                        $errors['agree'] = $this->apbct->get_block_comment();
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
     <!-- Hidden fields -->
     <file path="catalog/view/theme/*/template/{{account,affiliate}/register.twig,account/return_form.twig,information/contact.twig}">
         <operation>

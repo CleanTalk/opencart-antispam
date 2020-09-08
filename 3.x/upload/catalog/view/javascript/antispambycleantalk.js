@@ -86,6 +86,11 @@ function apbct_ready(){
 	if (document.getElementById("ct_checkjs"))
 		document.getElementById("ct_checkjs").value = ct_date.getFullYear();
 
+	for(var i = 0; i < document.getElementsByClassName('ct_checkjs').length; i++){
+		console.log(document.getElementsByClassName('ct_checkjs')[i]);
+		document.getElementsByClassName('ct_checkjs')[i].value = ct_date.getFullYear();
+	}
+
 	setTimeout(function(){
 
 		for(var i = 0; i < document.forms.length; i++){

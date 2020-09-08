@@ -280,4 +280,12 @@
             ]]></add>
         </operation>
     </file>
+    <file path="catalog/view/theme/*/template/journal3/module/{form,newsletter}.twig">
+        <operation>
+            <search index="0"><![CDATA[</form>]]></search>
+            <add position="before"><![CDATA[
+            <input type="hidden" name="ct_checkjs" class="ct_checkjs" value="0" />
+            ]]></add>
+        </operation>
+    </file>
 </modification>

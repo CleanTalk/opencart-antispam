@@ -11,6 +11,7 @@
             <search><![CDATA[$this->registry->set('cart', new Cart\Cart($this->registry));]]></search>
             <add position="after"><![CDATA[
             // AntiSpam By Cleantalk
+            require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
             $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
 			$this->apbct->init( $this->config );
             ]]></add>

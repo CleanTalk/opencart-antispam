@@ -6,6 +6,7 @@ class ControllerExtensionModuleAntispamByCleantalk extends Controller {
     {
         $this->install();
 
+        require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
         $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
 
         $data = $this->load->language('extension/module/antispambycleantalk');

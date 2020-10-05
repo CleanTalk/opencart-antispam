@@ -1,6 +1,6 @@
 # opencart-antispam
 Opencart anti-spam extension.
-# Version 1.9
+# Version 2.1
 
 ## How to install
 

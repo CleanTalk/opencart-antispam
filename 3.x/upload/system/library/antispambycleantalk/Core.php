@@ -10,7 +10,7 @@ use Cleantalk\Antispam\Helper;
 
 class Core
 {
-    const VERSION = '2.0';
+    const VERSION = '2.1';
 
     private $agent;
 

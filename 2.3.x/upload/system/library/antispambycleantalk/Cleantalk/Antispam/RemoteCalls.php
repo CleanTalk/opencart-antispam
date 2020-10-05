@@ -20,7 +20,7 @@ class RemoteCalls
         $this->table_prefix = $db_prefix;
     }
 	
-	public static function check()
+	public function check()
     {
 		return isset($_GET['spbc_remote_call_token'], $_GET['spbc_remote_call_action'], $_GET['plugin_name']) && in_array(Get::get('plugin_name'), array('antispam','anti-spam', 'apbct'))
 			? true

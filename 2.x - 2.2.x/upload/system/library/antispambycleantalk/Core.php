@@ -39,10 +39,20 @@ class Core
         return static::$instance;
     }
 
+    /**
+     * Getting version number
+     *
+     * @return string
+     */
+    public function get_version() {
+        return self::VERSION;
+    }
+
+
     private function __construct( \Registry $registry )
     {
         $this->autoloader();
-        $this->agent = 'opencart-' . str_replace( '.', '', self::VERSION );
+        $this->agent = 'opencart-' . str_replace( '.', '', $this->get_version() );
         $this->rc = new RemoteCalls( $registry->get('db'), DB_PREFIX );
         $this->sfw = new SFW( $registry->get('db'), DB_PREFIX );
     }

@@ -70,7 +70,7 @@ class SFW
 		
 		$this->debug = isset($_GET['debug']) && intval($_GET['debug']) === 1 ? true : false;
 
-        $this->ip_array = $this->ip__get();
+        $this->ip_array = $this->ip__get( array('real'), true );
 	}
 
     /**

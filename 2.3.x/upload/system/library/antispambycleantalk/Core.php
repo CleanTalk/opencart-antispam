@@ -51,6 +51,7 @@ class Core
     private function __construct( \Registry $registry )
     {
         $this->autoloader();
+        require_once 'php_fix.php';
         $this->agent = 'opencart-' . str_replace( '.', '', $this->get_version() );
         $this->rc = new RemoteCalls( $registry->get('db'), DB_PREFIX );
         $this->sfw = new SFW( $registry->get('db'), DB_PREFIX );

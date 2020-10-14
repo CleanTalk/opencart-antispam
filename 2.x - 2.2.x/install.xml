@@ -73,6 +73,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -104,6 +105,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -135,6 +137,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -155,6 +158,7 @@
 
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_return'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -173,6 +177,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_orders'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -191,6 +196,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_reviews'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )
@@ -209,6 +215,7 @@
             {
                 if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
                 {
+                    require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
                     $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
                     $this->apbct->init( $this->config );
                     if( $this->apbct->is_spam( $this ) )

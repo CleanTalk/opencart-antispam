@@ -10,7 +10,7 @@ use Cleantalk\Antispam\Helper;
 
 class Core
 {
-    const VERSION = '2.0';
+    const VERSION = '2.1';
 
     private $agent;
 
@@ -39,10 +39,21 @@ class Core
         return static::$instance;
     }
 
+    /**
+     * Getting version number
+     *
+     * @return string
+     */
+    public function get_version() {
+        return self::VERSION;
+    }
+
+
     private function __construct( \Registry $registry )
     {
         $this->autoloader();
-        $this->agent = 'opencart-' . str_replace( '.', '', self::VERSION );
+        require_once 'php_fix.php';
+        $this->agent = 'opencart-' . str_replace( '.', '', $this->get_version() );
         $this->rc = new RemoteCalls( $registry->get('db'), DB_PREFIX );
         $this->sfw = new SFW( $registry->get('db'), DB_PREFIX );
     }

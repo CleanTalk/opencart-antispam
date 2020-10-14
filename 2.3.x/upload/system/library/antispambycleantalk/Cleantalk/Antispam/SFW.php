@@ -2,6 +2,7 @@
 
 namespace Cleantalk\Antispam;
 
+use Cleantalk\Common\Get;
 use Cleantalk\Common\Server;
 
 /**
@@ -70,7 +71,7 @@ class SFW
 		
 		$this->debug = isset($_GET['debug']) && intval($_GET['debug']) === 1 ? true : false;
 
-        $this->ip_array = $this->ip__get();
+        $this->ip_array = $this->ip__get( array('real'), true );
 	}
 
     /**
@@ -294,10 +295,12 @@ class SFW
     {
         if( ! empty( $api_key ) ) {
 
-            $file_urls = isset( $_GET['file_urls'] ) ? urldecode( $_GET['file_urls'] ) : null;
-            $file_urls = isset( $file_urls ) ? explode( ',', $file_urls ) : null;
+            $api_server    = !empty( Get::get( 'api_server' ) )    ? urldecode( Get::get( 'api_server' ) )    : null;
+            $data_id       = !empty( Get::get( 'data_id' ) )       ? urldecode( Get::get( 'data_id' ) )       : null;
+            $file_url_nums = !empty( Get::get( 'file_url_nums' ) ) ? urldecode( Get::get( 'file_url_nums' ) ) : null;
+            $file_url_nums = isset($file_url_nums) ? explode(',', $file_url_nums) : null;
 
-            if( ! $file_urls ){
+            if( ! isset( $api_server, $data_id, $file_url_nums ) ){
 
                 $result = $this->get_sfw_file( $api_key, $immediate );
 
@@ -305,22 +308,24 @@ class SFW
                     ? $result
                     : true;
 
-            }elseif( is_array( $file_urls ) && count( $file_urls ) ){
+            }elseif( $api_server && $data_id && is_array( $file_url_nums ) && count( $file_url_nums ) ){
 
-                $result = $this->sfw_update_db( $file_urls[0] );
+                $result = $this->sfw_update_db( $api_server, $data_id, $file_url_nums[0] );
 
                 if( empty( $result['error'] ) ){
 
-                    array_shift($file_urls);
+                    array_shift( $file_url_nums );
 
-                    if (count($file_urls)) {
+                    if ( count( $file_url_nums ) ) {
                         Helper::http__request(
                             Server::get('HTTP_HOST'),
                             array(
                                 'spbc_remote_call_token'  => md5($api_key),
                                 'spbc_remote_call_action' => 'sfw_update',
                                 'plugin_name'             => 'apbct',
-                                'file_urls'               => implode(',', $file_urls),
+                                'api_server'              => $api_server,
+                                'data_id'                 => $data_id,
+                                'file_url_nums'           => implode(',', $file_url_nums),
                             ),
                             array('get', 'async')
                         );
@@ -364,29 +369,40 @@ class SFW
                             }
                         }
 
-                        $gf = \gzopen($result['file_url'], 'rb');
+                        if (preg_match('/multifiles/', $result['file_url'])) {
 
-                        if ($gf) {
+                            $api_server = preg_replace( '@https://(api.*?)\.cleantalk\.org/.*?(bl_list_[0-9a-z]*?)\.multifiles\.csv\.gz@', '$1', $result['file_url'] );
+                            $data_id    = preg_replace( '@https://(api.*?)\.cleantalk\.org/.*?(bl_list_[0-9a-z]*?)\.multifiles\.csv\.gz@', '$2', $result['file_url'] );
 
-                            $file_urls = array();
+                            $gf = \gzopen($result['file_url'], 'rb');
 
-                            while( ! \gzeof($gf) )
-                                $file_urls[] = trim( \gzgets($gf, 1024) );
+                            if ($gf) {
 
-                            \gzclose($gf);
+                                $file_url_nums = array();
 
-                            return Helper::http__request(
-                                Server::get('HTTP_HOST'),
-                                array(
-                                    'spbc_remote_call_token'  => md5( $api_key ),
-                                    'spbc_remote_call_action' => 'sfw_update',
-                                    'plugin_name'             => 'apbct',
-                                    'file_urls'               => implode( ',', $file_urls ),
-                                ),
-                                $pattenrs
-                            );
-                        }else
-                            return array('error' => 'COULD_NOT_OPEN_REMOTE_FILE_SFW');
+                                while( ! \gzeof($gf) ) {
+                                    $file_url = trim( \gzgets($gf, 1024) );
+                                    $file_url_nums[] = preg_replace( '@(https://.*)\.(\d*)(\.csv\.gz)@', '$2', $file_url );
+                                }
+
+                                \gzclose($gf);
+
+                                return Helper::http__request(
+                                    Server::get('HTTP_HOST'),
+                                    array(
+                                        'spbc_remote_call_token'  => md5( $api_key ),
+                                        'spbc_remote_call_action' => 'sfw_update',
+                                        'plugin_name'             => 'apbct',
+                                        'api_server'              => $api_server,
+                                        'data_id'                 => $data_id,
+                                        'file_url_nums'           => implode(',', $file_url_nums),
+                                    ),
+                                    $pattenrs
+                                );
+                            }else
+                                return array('error' => 'COULD_NOT_OPEN_REMOTE_FILE_SFW');
+                        } else
+                            return array('error' => 'COULD_NOT_GET_MULTIFILE');
                     }else
                         return array('error' => 'ERROR_ALLOW_URL_FOPEN_DISABLED');
                 }else
@@ -397,9 +413,11 @@ class SFW
             return $result;
     }
 
-    private function sfw_update_db( $file_url )
+    private function sfw_update_db( $api_server = null, $data_id = null, $file_url_num = null )
     {
-        if(Helper::http__request($file_url, array(), 'get_code') === 200){ // Check if it's there
+        $file_url = 'https://' . $api_server . '.cleantalk.org/store/' . $data_id . '.' . $file_url_num . '.csv.gz';
+
+        if( Helper::http__request( $file_url, array(), 'get_code') === 200 ){ // Check if it's there
 
             $gf = \gzopen($file_url, 'rb');
 

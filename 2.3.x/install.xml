@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>2.0</version>
+    <version>2.1</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
@@ -11,6 +11,7 @@
             <search><![CDATA[$this->registry->set('openbay', new Openbay($this->registry));]]></search>
             <add position="after"><![CDATA[
             // AntiSpam By Cleantalk
+            require_once(DIR_SYSTEM . 'library/antispambycleantalk/Core.php');
             $this->registry->set( 'apbct', AntispamByCleantalk\Core::get_instance( $this->registry ) );
 			$this->apbct->init( $this->config );
             ]]></add>
@@ -22,7 +23,7 @@
         <operation>
             <search><![CDATA[$data['scripts'] = $this->document->getScripts();]]></search>
             <add position="before"><![CDATA[
-            $ver = '?v=' . $this->apbct::VERSION;
+            $ver = '?v=' . $this->apbct->get_version();
             $this->document->addScript( 'catalog/view/javascript/antispambycleantalk.js' . $ver );
             $this->apbct->setCookie();
             ]]></add>
@@ -35,7 +36,7 @@
             {
                 if ( $this->request->server['REQUEST_METHOD'] == 'GET' && $this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_enable_sfw') )
                 {
-                    if( $this->apbct->rc::check($this->config->get('module_antispambycleantalk_access_key')) ) {
+                    if( $this->apbct->rc->check($this->config->get('module_antispambycleantalk_access_key')) ) {
                         $this->apbct->rc->perform($this->config->get('module_antispambycleantalk_access_key'));
                     }
 

@@ -89,26 +89,28 @@ class Core
 
     public function setCookie()
     {
-        // Cookie names to validate
-        $cookie_test_value = array(
-            'cookies_names' => array(),
-            'check_value' => $this->ct_access_key,
-        );
-        // Pervious referer
-        if(!empty($_SERVER['HTTP_REFERER'])){
-            Helper::apbct_cookie__set('apbct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
-            $cookie_test_value['cookies_names'][] = 'apbct_prev_referer';
-            $cookie_test_value['check_value'] .= $_SERVER['HTTP_REFERER'];
-        }
-        // Submit time
-        $apbct_timestamp = time();
-        Helper::apbct_cookie__set('apbct_timestamp', $apbct_timestamp, 0, '/');
-        $cookie_test_value['cookies_names'][] = 'apbct_timestamp';
-        $cookie_test_value['check_value'] .= $apbct_timestamp;
+        if (!headers_sent()) {
+            // Cookie names to validate
+            $cookie_test_value = array(
+                'cookies_names' => array(),
+                'check_value' => $this->ct_access_key,
+            );
+            // Pervious referer
+            if(!empty($_SERVER['HTTP_REFERER'])){
+                Helper::apbct_cookie__set('apbct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
+                $cookie_test_value['cookies_names'][] = 'apbct_prev_referer';
+                $cookie_test_value['check_value'] .= $_SERVER['HTTP_REFERER'];
+            }
+            // Submit time
+            $apbct_timestamp = time();
+            Helper::apbct_cookie__set('apbct_timestamp', $apbct_timestamp, 0, '/');
+            $cookie_test_value['cookies_names'][] = 'apbct_timestamp';
+            $cookie_test_value['check_value'] .= $apbct_timestamp;
 
-        // Cookies test
-        $cookie_test_value['check_value'] = md5($cookie_test_value['check_value']);
-        Helper::apbct_cookie__set('apbct_cookies_test', json_encode($cookie_test_value), 0, '/');
+            // Cookies test
+            $cookie_test_value['check_value'] = md5($cookie_test_value['check_value']);
+            Helper::apbct_cookie__set('apbct_cookies_test', json_encode($cookie_test_value), 0, '/');
+        }
     }
 
     public function apbctCookiesTest()

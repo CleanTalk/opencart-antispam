@@ -127,10 +127,12 @@ apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
 
 // Include JS checking code to ajax requests
 jQuery(document).ajaxSend(function(event, xhr, settings) {
-	if( undefined !== settings.data ) {
-		if( settings.data.indexOf( 'account=register' ) !== -1 ) {
-			settings.data += '&ct_checkjs=' + $('#ct_checkjs').val();
-		}
+	if(
+		undefined !== settings.data &&
+		typeof settings.data === 'string' &&
+		settings.data.indexOf( 'account=register' ) !== 1
+	){
+		settings.data += '&ct_checkjs=' + $('#ct_checkjs').val();
 	}
 });
 

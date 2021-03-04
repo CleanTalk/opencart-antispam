@@ -234,6 +234,24 @@
             ]]></add>
         </operation>
     </file>
+    <!-- Form Builder Pro -->
+    <file path="catalog/controller/page/formpro.php">
+        <operation>
+            <search index="0"><![CDATA[if (!$json) {]]></search>
+            <add position="before"><![CDATA[
+            if (
+                ! $json &&
+                $this->config->get( 'module_antispambycleantalk_status' ) &&
+                $this->config->get( 'module_antispambycleantalk_check_contact_form' ) &&
+                $this->apbct->is_spam( $this )
+            ){
+                $json['error']['warning'] = $this->apbct->get_block_comment();
+                $this->response->addHeader('Content-Type: application/json');
+                $this->response->setOutput(json_encode($json));
+            }
+            ]]></add>
+        </operation>
+    </file>
     <!-- Spam checking on journal3/newsletter -->
     <file path="catalog/controller/journal3/newsletter.php">
         <operation>

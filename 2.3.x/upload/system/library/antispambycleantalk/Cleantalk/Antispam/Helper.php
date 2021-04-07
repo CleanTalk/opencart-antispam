@@ -224,56 +224,73 @@ class Helper
 	 *
 	 * @return bool
 	 */
-	static public function ip__mask_match($ip, $cidr, $ip_type = 'v4', $xtet_count = 0)
-	{
-		if(is_array($cidr)){
-			foreach($cidr as $curr_mask){
-				if(self::ip__mask_match($ip, $curr_mask, $ip_type)){
-					return true;
-				}
-			}
-			unset($curr_mask);
-			return false;
-		}
-		
-		$xtet_base = ($ip_type == 'v4') ? 8 : 16;
-		
-		// Calculate mask
-		$exploded = explode('/', $cidr);
-		$net_ip = $exploded[0];
-		$mask = $exploded[1];
-		
-		// Exit condition
-		$xtet_end = ceil($mask / $xtet_base);
-		if($xtet_count == $xtet_end)
-			return true;
-		
-		// Lenght of bits for comparsion
-		$mask = $mask - $xtet_base * $xtet_count >= $xtet_base ? $xtet_base : $mask - $xtet_base * $xtet_count;
-		
-		// Explode by octets/hextets from IP and Net
-		$net_ip_xtets = explode($ip_type == 'v4' ? '.' : ':', $net_ip);
-		$ip_xtets = explode($ip_type == 'v4' ? '.' : ':', $ip);
-		
-		// Standartizing. Getting current octets/hextets. Adding leading zeros.
-		$net_xtet = str_pad(decbin($ip_type == 'v4' ? $net_ip_xtets[$xtet_count] : @hexdec($net_ip_xtets[$xtet_count])), $xtet_base, 0, STR_PAD_LEFT);
-		$ip_xtet = str_pad(decbin($ip_type == 'v4' ? $ip_xtets[$xtet_count] : @hexdec($ip_xtets[$xtet_count])), $xtet_base, 0, STR_PAD_LEFT);
-		
-		// Comparing bit by bit
-		for($i = 0, $result = true; $mask != 0; $mask--, $i++){
-			if($ip_xtet[$i] != $net_xtet[$i]){
-				$result = false;
-				break;
-			}
-		}
-		
-		// Recursing. Moving to next octet/hextet.
-		if($result)
-			$result = self::ip__mask_match($ip, $cidr, $ip_type, $xtet_count + 1);
-		
-		return $result;
-		
-	}
+    static public function ip__mask_match($ip, $cidr, $ip_type = 'v4', $xtet_count = 0)
+    {
+
+        if(is_array($cidr)){
+            foreach($cidr as $curr_mask){
+                if(self::ip__mask_match($ip, $curr_mask, $ip_type)){
+                    return true;
+                }
+            }
+            unset($curr_mask);
+            return false;
+        }
+
+        if( ! self::ip__validate( $ip ) || ! self::cidr__validate( $cidr ) ){
+            return false;
+        }
+
+        $xtet_base = ($ip_type == 'v4') ? 8 : 16;
+
+        // Calculate mask
+        $exploded = explode('/', $cidr);
+        $net_ip = $exploded[0];
+        $mask = $exploded[1];
+
+        // Exit condition
+        $xtet_end = ceil($mask / $xtet_base);
+        if($xtet_count == $xtet_end)
+            return true;
+
+        // Lenght of bits for comparsion
+        $mask = $mask - $xtet_base * $xtet_count >= $xtet_base ? $xtet_base : $mask - $xtet_base * $xtet_count;
+
+        // Explode by octets/hextets from IP and Net
+        $net_ip_xtets = explode($ip_type == 'v4' ? '.' : ':', $net_ip);
+        $ip_xtets = explode($ip_type == 'v4' ? '.' : ':', $ip);
+
+        // Standartizing. Getting current octets/hextets. Adding leading zeros.
+        $net_xtet = str_pad(decbin($ip_type == 'v4' ? $net_ip_xtets[$xtet_count] : @hexdec($net_ip_xtets[$xtet_count])), $xtet_base, 0, STR_PAD_LEFT);
+        $ip_xtet = str_pad(decbin($ip_type == 'v4' ? $ip_xtets[$xtet_count] : @hexdec($ip_xtets[$xtet_count])), $xtet_base, 0, STR_PAD_LEFT);
+
+        // Comparing bit by bit
+        for($i = 0, $result = true; $mask != 0; $mask--, $i++){
+            if($ip_xtet[$i] != $net_xtet[$i]){
+                $result = false;
+                break;
+            }
+        }
+
+        // Recursing. Moving to next octet/hextet.
+        if($result)
+            $result = self::ip__mask_match($ip, $cidr, $ip_type, $xtet_count + 1);
+
+        return $result;
+
+    }
+
+    /**
+     * Validate CIDR
+     *
+     * @param string $cidr expects string like 1.1.1.1/32
+     *
+     * @return bool
+     */
+    public static function cidr__validate( $cidr ){
+        $cidr = explode( '/', $cidr );
+        return isset( $cidr[0], $cidr[1] ) && self::ip__validate( $cidr[0] ) && preg_match( '@\d{1,2}@', $cidr[1] );
+    }
 	
 	/**
 	 * Converts long mask like 4294967295 to number like 32

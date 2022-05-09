@@ -734,6 +734,10 @@ class Helper
      */
     public static function apbct_cookie__set ($name, $value = '', $expires = 0, $path = '', $domain = null, $secure = false, $httponly = false, $samesite = 'Lax' ) {
 
+        if ( headers_sent() ) {
+            return;
+        }
+
         // For PHP 7.3+ and above
         if( version_compare( phpversion(), '7.3.0', '>=' ) ){
 

@@ -153,6 +153,31 @@
             ]]></add>
         </operation>
     </file>
+    <!-- Spam checking on checkout/simplecheckout.php -->
+    <file path="catalog/controller/checkout/simplecheckout.php">
+        <operation>
+            <search><![CDATA[$order_id = $this->order();]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$stateChanged = $this->saveCustomerInfo();]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[if ($this->simplecheckout->getSettingValue('ignorePayment')) {]]></search>
+            <add position="before"><![CDATA[
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if ( $this->apbct->is_spam( $this ) ) {
+                        // @ToDo implement blocking message output
+                    } else {
+                        $stateChanged = $this->saveCustomerInfo();
+                        $order_id = $this->order();
+                    }
+                }
+            ]]></add>
+        </operation>
+    </file>
     <!-- Spam checking on information/contact -->
     <file path="catalog/controller/information/contact.php">
         <operation>

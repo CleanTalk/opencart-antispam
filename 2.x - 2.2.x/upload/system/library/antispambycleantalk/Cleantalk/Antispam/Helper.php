@@ -154,11 +154,7 @@ class Helper
 			if($ip_type === false ||
 				($ip_type && 
 					(self::ip__is_private_network($ips['real'], $ip_type) || 
-						self::ip__mask_match(
-							$ips['real'],
-							(isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] . '/24' : '127.0.0.1/24'),
-							$ip_type
-						)
+					($ip_type === self::ip__validate($_SERVER['SERVER_ADDR']) && self::ip__mask_match($ips['real'], $_SERVER['SERVER_ADDR'] . '/24', $ip_type))
 					)
 				)
 			){

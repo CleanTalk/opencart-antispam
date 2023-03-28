@@ -10,7 +10,7 @@ use Cleantalk\Antispam\Helper;
 
 class Core
 {
-    const VERSION = '2.1';
+    const VERSION = '2.3';
 
     private $agent;
 
@@ -148,6 +148,9 @@ class Core
             case 'ControllerCheckoutRegister' :
                 $ct_result = $this->onSpamCheck( 'register', $controller->request->post );
                 break;
+			case 'ControllerAccountSimpleRegister':
+				$ct_result = $this->onSpamCheck( 'register', $controller->request->post['register'] );
+				break;
             case 'ControllerJournal3Checkout' :
                 $ct_result = $this->onSpamCheck( 'register', $controller->request->post['order_data'] );
                 break;
@@ -206,8 +209,12 @@ class Core
             'post_url' => isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : null,
         ));
         $js_on = 0;
-        if (isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y"))
-            $js_on = 1;
+		if (
+			(isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y")) ||
+			(isset($data['ct_checkjs']) && $data['ct_checkjs'] == date("Y"))
+		) {
+			$js_on = 1;
+		}
         $ct = new Cleantalk();
         $ct->work_url = 'http://moderate.cleantalk.org';
         $ct->server_url = 'http://moderate.cleantalk.org';

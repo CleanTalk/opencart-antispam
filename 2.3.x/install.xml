@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <modification>
     <name>Antispam by Cleantalk</name>
-    <version>2.1</version>
+    <version>2.3</version>
     <author>Cleantalk Inc.</author>
     <link>https://cleantalk.org/</link>
     <code>antispambycleantalk</code>
@@ -178,6 +178,26 @@
             ]]></add>
         </operation>
     </file>
+    <!-- Spam checking on account/simpleregister.php -->
+    <file path="catalog/controller/account/simpleregister.php">
+        <operation>
+            <search><![CDATA[return !$error;]]></search>
+            <add position="before"><![CDATA[
+            if (empty($this->error))
+            {
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                {
+                    if( $this->apbct->is_spam( $this ) )
+                    {
+                        $this->_templateData['error_warning'] = $this->apbct->get_block_comment();
+                        $this->error = true;
+                        return false;
+                    }
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
     <!-- Spam checking on information/contact -->
     <file path="catalog/controller/information/contact.php">
         <operation>
@@ -261,6 +281,12 @@
             <search><![CDATA[<div class="buttons">]]></search>
             <add position="before"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>             
+    </file>
+    <file path="catalog/view/theme/*/template/account/simpleregister.tpl">
+        <operation>
+            <search><![CDATA[</form>]]></search>
+            <add position="before"><![CDATA[<input type="hidden" name="register[ct_checkjs]" id="ct_checkjs" value="0" />]]></add>
+        </operation>
     </file>
     <file path="catalog/view/theme/*/template/affiliate/register.tpl">
         <operation>

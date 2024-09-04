@@ -238,7 +238,7 @@ class Core
             case 'order':
                 $ct_request->sender_email = $data['email'];
                 $ct_request->sender_nickname = trim($data['firstname']).' '.trim($data['lastname']);
-                $ct_result = $ct->isAllowUser($ct_request);
+                $ct_result = $ct->isAllowMessage($ct_request);
                 break;
             case 'contact':
                 $ct_request->sender_email = $data['email'];

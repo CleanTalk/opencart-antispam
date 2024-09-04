@@ -318,4 +318,35 @@
             <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
         </operation>
     </file>
+    <!-- Fast Order Form integration -->
+    <file path="catalog/controller/product/fastorder.php">
+        <operation>
+            <search><![CDATA[$this->load->language('product/fastorder');]]></search>
+            <add position="after"><![CDATA[
+            if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
+            {
+                if( $this->apbct->is_spam( $this ) ) {
+                    http_response_code(403);
+                    die($this->apbct->get_block_comment());
+                }
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/product/fastorder.tpl">
+        <operation>
+            <search><![CDATA[<!-- Button fastorder -->]]></search>
+            <add position="after"><![CDATA[<input type="hidden" name="ct_checkjs" id="ct_checkjs" value="0" />]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/product/fastorder_form.tpl">
+        <operation>
+            <search><![CDATA[data['product_link']  = '<?php echo $product_link;?>';]]></search>
+            <add position="after"><![CDATA[data['ct_checkjs']    = $('#ct_checkjs').val();]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[name: data['name']]]></search>
+            <add position="replace"><![CDATA[name: data['name'], ct_checkjs: data['ct_checkjs']]]></add>
+        </operation>
+    </file>
 </modification>

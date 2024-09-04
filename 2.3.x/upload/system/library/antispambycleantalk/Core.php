@@ -257,6 +257,13 @@ class Core
                 $ct_request->message = trim($data['comment']);
                 $ct_result = $ct->isAllowMessage($ct_request);
                 break;
+            default:
+                $ct_request->sender_nickname = isset($data['name']) ? trim($data['name']) : null;
+                $ct_request->sender_email = isset($data['email']) ? trim($data['email']) : null;
+                $ct_request->sender_email = is_null($ct_request->sender_email) && isset($data['mail']) ? trim($data['mail']) : null;
+                $ct_request->message = isset($data['text']) ? trim($data['text']) : null;
+                $ct_result = $ct->isAllowMessage($ct_request);
+                break;
         }
         if (isset($ct_result))
         {

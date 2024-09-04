@@ -83,8 +83,14 @@ apbct_attach_event_handler(window, "keydown", ctFunctionFirstKey);
 function apbct_ready(){
 	ctSetCookieSec("apbct_visible_fields", 0);
 	ctSetCookieSec("apbct_visible_fields_count", 0);
-	if (document.getElementById("ct_checkjs"))
-		document.getElementById("ct_checkjs").value = ct_date.getFullYear();
+
+	// Get all input elements with the name attribute 'ct_checkjs'
+	const ctCheckJsInputs = document.querySelectorAll("input[name='ct_checkjs']");
+
+	// Set the value of each input to the current year
+	ctCheckJsInputs.forEach(function(input) {
+		input.value = ct_date.getFullYear();
+	});
 
 	setTimeout(function(){
 

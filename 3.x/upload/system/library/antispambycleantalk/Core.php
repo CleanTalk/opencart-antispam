@@ -220,7 +220,7 @@ class Core
             'comment_type' => $content_type,
             'post_url' => isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : null,
         ));
-        
+
         // JS check
         $js_on = 0;
         if (
@@ -229,7 +229,7 @@ class Core
         ){
             $js_on = 1;
         }
-        
+
         $ct = new Cleantalk();
         $ct->work_url = 'http://moderate.cleantalk.org';
         $ct->server_url = 'http://moderate.cleantalk.org';

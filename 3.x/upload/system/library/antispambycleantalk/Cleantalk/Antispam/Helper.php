@@ -687,19 +687,24 @@ class Helper
 	 */
 	public static function fromUTF8($obj, $data_codepage = null)
 	{
-		// Array || object
-		if(is_array($obj) || is_object($obj)){
-			foreach($obj as $key => &$val){
-				$val = self::fromUTF8($val, $data_codepage);
-			}
-			unset($key, $val);
-			
-			//String
-		}else{
-			if(preg_match('u', $obj) && function_exists('mb_convert_encoding') && $data_codepage !== null)
-				$obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
-		}
-		return $obj;
+        // Array || object
+        if (is_array($obj) || is_object($obj)) {
+            foreach ($obj as $_key => &$val) {
+                $val = self::fromUTF8($val, $data_codepage);
+            }
+            unset($val);
+            //String
+        } else {
+            if ($data_codepage !== null && preg_match('//u', $obj)) {
+                if ( function_exists('mb_convert_encoding') ) {
+                    $obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
+                } elseif (version_compare(phpversion(), '8.3', '<')) {
+                    $obj = @utf8_decode($obj);
+                }
+            }
+        }
+
+        return $obj;
 	}
 	
 	/**

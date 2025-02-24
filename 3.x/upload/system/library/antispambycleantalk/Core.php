@@ -25,6 +25,14 @@ class Core
     private $comment = '';
 
     private static $instance;
+    /**
+     * @var RemoteCalls
+     */
+    public $rc;
+    /**
+     * @var SFW
+     */
+    public $sfw;
 
     /**
      * @param \Registry  $registry  Registry Object

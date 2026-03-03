@@ -20,7 +20,7 @@ class Helper
 	 * Default user agent for HTTP requests
 	 */
 	const AGENT = 'Cleantalk-Helper/3.4';
-	
+
 	/**
 	 * @var array Set of private networks IPv4 and IPv6
 	 */
@@ -37,27 +37,7 @@ class Helper
 			'0:0:0:0:0:0:a:1/128', // ::ffff:127.0.0.1
 		),
 	);
-	
-	/**
-	 * @var array Set of CleanTalk servers
-	 */
-	public static $cleantalks_servers = array(
-		// MODERATE
-		'moderate1.cleantalk.org' => '162.243.144.175',
-		'moderate2.cleantalk.org' => '159.203.121.181',
-		'moderate3.cleantalk.org' => '88.198.153.60',
-		'moderate4.cleantalk.org' => '159.69.51.30',
-		'moderate5.cleantalk.org' => '95.216.200.119',
-		'moderate6.cleantalk.org' => '138.68.234.8',
-		// APIX
-		'apix1.cleantalk.org' => '35.158.52.161',
-		'apix2.cleantalk.org' => '18.206.49.217',
-		'apix3.cleantalk.org' => '3.18.23.246',
-		//ns
-		'netserv2.cleantalk.org' => '178.63.60.214',
-		'netserv3.cleantalk.org' => '188.40.14.173',
-	);
-	
+
 	/**
 	 * Getting arrays of IP (REMOTE_ADDR, X-Forwarded-For, X-Real-Ip, Cf_Connecting_Ip)
 	 *
@@ -70,7 +50,7 @@ class Helper
 	{
 		$ips = array_flip($ip_types); // Result array with IPs
 		$headers = apache_request_headers();
-		
+
 		// REMOTE_ADDR
 		if(isset($ips['remote_addr'])){
 			$ip_type = self::ip__validate( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '' );
@@ -78,7 +58,7 @@ class Helper
 				$ips['remote_addr'] = ($ip_type == 'v6' ? self::ip__v6_normalize(isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '' ) : isset( $_SERVER['REMOTE_ADDR'] )) ? $_SERVER['REMOTE_ADDR'] : '';
 			}
 		}
-		
+
 		// X-Forwarded-For
 		if(isset($ips['x_forwarded_for'])){
 			if(isset($headers['X-Forwarded-For'])){
@@ -90,7 +70,7 @@ class Helper
 				}
 			}
 		}
-		
+
 		// X-Real-Ip
 		if(isset($ips['x_real_ip'])){
 			if(isset($headers['X-Real-Ip'])){
@@ -102,7 +82,7 @@ class Helper
 				}
 			}
 		}
-		
+
 		// Cloud Flare
 		if(isset($ips['cloud_flare'])){
 			if(isset($headers['CF-Connecting-IP'], $headers['CF-IPCountry'], $headers['CF-RAY']) || isset($headers['Cf-Connecting-Ip'], $headers['Cf-Ipcountry'], $headers['Cf-Ray'])){
@@ -114,15 +94,15 @@ class Helper
 				}
 			}
 		}
-		
+
 		// Getting real IP from REMOTE_ADDR or Cf_Connecting_Ip if set or from (X-Forwarded-For, X-Real-Ip) if REMOTE_ADDR is local.
 		if(isset($ips['real'])){
-			
+
 			// Detect IP type
 			$ip_type = self::ip__validate(isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '');
 			if($ip_type)
 				$ips['real'] = ($ip_type == 'v6' ? self::ip__v6_normalize(isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '' ) : isset( $_SERVER['REMOTE_ADDR'] )) ? $_SERVER['REMOTE_ADDR'] : '';
-			
+
 			// Cloud Flare
 			if(isset($headers['CF-Connecting-IP'], $headers['CF-IPCountry'], $headers['CF-RAY']) || isset($headers['Cf-Connecting-Ip'], $headers['Cf-Ipcountry'], $headers['Cf-Ray'])){
 				$tmp = isset($headers['CF-Connecting-IP']) ? $headers['CF-Connecting-IP'] : $headers['Cf-Connecting-Ip'];
@@ -130,35 +110,35 @@ class Helper
 				$ip_type = self::ip__validate(trim($tmp[0]));
 				if($ip_type)
 					$ips['real'] = $ip_type == 'v6' ? self::ip__v6_normalize(trim($tmp[0])) : trim($tmp[0]);
-				
+
 				// Sucury
 			}elseif(isset($headers['X-Sucuri-Clientip'], $headers['X-Sucuri-Country'])){
 				$ip_type = self::ip__validate($headers['X-Sucuri-Clientip']);
 				if($ip_type)
 					$ips['real'] = $ip_type == 'v6' ? self::ip__v6_normalize($headers['X-Sucuri-Clientip']) : $headers['X-Sucuri-Clientip'];
-				
+
 				// OVH
 			}elseif(isset($headers['X-Cdn-Any-Ip'], $headers['Remote-Ip'])){
 				$ip_type = self::ip__validate($headers['X-Cdn-Any-Ip']);
 				if($ip_type)
 					$ips['real'] = $ip_type == 'v6' ? self::ip__v6_normalize($headers['X-Cdn-Any-Ip']) : $headers['X-Cdn-Any-Ip'];
-				
+
 				// Incapsula proxy
 			}elseif(isset($headers['Incap-Client-Ip'])){
 				$ip_type = self::ip__validate($headers['Incap-Client-Ip']);
 				if($ip_type)
 					$ips['real'] = $ip_type == 'v6' ? self::ip__v6_normalize($headers['Incap-Client-Ip']) : $headers['Incap-Client-Ip'];
 			}
-			
+
 			// Is private network
 			if($ip_type === false ||
-				($ip_type && 
+				($ip_type &&
 					(self::ip__is_private_network($ips['real'], $ip_type) ||
                     ($ip_type === self::ip__validate($_SERVER['SERVER_ADDR']) && self::ip__mask_match($ips['real'], $_SERVER['SERVER_ADDR'] . '/24', $ip_type))
 					)
 				)
 			){
-				
+
 				// X-Forwarded-For
 				if(isset($headers['X-Forwarded-For'])){
 					$tmp = explode(',', trim($headers['X-Forwarded-For']));
@@ -166,7 +146,7 @@ class Helper
 					$ip_type = self::ip__validate($tmp);
 					if($ip_type)
 						$ips['real'] = $ip_type == 'v6' ? self::ip__v6_normalize($tmp) : $tmp;
-					
+
 					// X-Real-Ip
 				}elseif(isset($headers['X-Real-Ip'])){
 					$tmp = explode(',', trim($headers['X-Real-Ip']));
@@ -177,7 +157,7 @@ class Helper
 				}
 			}
 		}
-		
+
 		// Validating IPs
 		$result = array();
 		foreach($ips as $key => $ip){
@@ -186,7 +166,7 @@ class Helper
 				$result[$key] = $ip;
 			}
 		}
-		
+
 		$result = array_unique($result);
 		return count($result) > 1
 			? $result
@@ -194,7 +174,7 @@ class Helper
 				? reset($result)
 				: null);
 	}
-	
+
 	/**
 	 * Checks if the IP is in private range
 	 *
@@ -207,7 +187,7 @@ class Helper
 	{
 		return self::ip__mask_match($ip, self::$private_networks[$ip_type], $ip_type);
 	}
-	
+
 	/**
 	 * Check if the IP belong to mask.  Recursive.
 	 * Octet by octet for IPv4
@@ -287,7 +267,7 @@ class Helper
         $cidr = explode( '/', $cidr );
         return isset( $cidr[0], $cidr[1] ) && self::ip__validate( $cidr[0] ) && preg_match( '@\d{1,2}@', $cidr[1] );
     }
-	
+
 	/**
 	 * Converts long mask like 4294967295 to number like 32
 	 *
@@ -300,7 +280,7 @@ class Helper
 		$num_mask = strpos((string)decbin($long_mask), '0');
 		return $num_mask === false ? 32 : $num_mask;
 	}
-	
+
 	/**
 	 * Validating IPv4, IPv6
 	 *
@@ -315,7 +295,7 @@ class Helper
 		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && self::ip__v6_reduce($ip) != '0::0') return 'v6';  // IPv6
 		return false; // Unknown
 	}
-	
+
 	/**
 	 * Expand IPv6
 	 *
@@ -343,7 +323,7 @@ class Helper
 		}
 		return $ip;
 	}
-	
+
 	/**
 	 * Reduce IPv6
 	 *
@@ -360,25 +340,7 @@ class Helper
 		}
 		return $ip;
 	}
-	
-	/**
-	 * Get URL form IP. Check if it's belong to cleantalk.
-	 *
-	 * @param string $ip
-	 *
-	 * @return false|int|string
-	 */
-	static public function ip__is_cleantalks($ip)
-	{
-		if(self::ip__validate($ip)){
-			$url = array_search($ip, self::$cleantalks_servers);
-			return $url
-				? true
-				: false;
-		}else
-			return false;
-	}
-	
+
 	/**
 	 * Get URL form IP. Check if it's belong to cleantalk.
 	 *
@@ -386,34 +348,77 @@ class Helper
 	 *
 	 * @return false|int|string
 	 */
-	static public function ip__resolve__cleantalks($ip)
+	static public function isCleanTalkServer($ip)
 	{
-		if(self::ip__validate($ip)){
-			$url = array_search($ip, self::$cleantalks_servers);
-			return $url
-				? $url
-				: self::ip__resolve($ip);
-		}else
-			return $ip;
+        $pattern = '/^(api|apix[0-9]+|moderate|moderate[0-9]+)\.cleantalk\.(org|ru)$/';
+        $validated_host = self::ipResolve($ip);
+        if ($validated_host && preg_match($pattern, $validated_host)) {
+            return $validated_host;
+        }
+        return false;
 	}
-	
+
 	/**
 	 * Get URL form IP
 	 *
 	 * @param $ip
 	 *
-	 * @return string
+	 * @return string|false
 	 */
-	static public function ip__resolve($ip)
+	static public function ipResolve($ip)
 	{
-		if(self::ip__validate($ip)){
-			$url = gethostbyaddr($ip);
-			if($url)
-				return $url;
-		}
-		return $ip;
+        // Validate IP first
+        $ip_version = self::ip__validate($ip);
+        if (!$ip_version) {
+            return false;
+        }
+
+        // Reverse DNS lookup (PTR record)
+        $hostname = gethostbyaddr($ip);
+
+        // If gethostbyaddr returns the IP itself, it means no PTR record exists
+        if (!$hostname || $hostname === $ip) {
+            return false;
+        }
+
+        // Forward DNS lookup - use dns_get_record() to support both IPv4 (A) and IPv6 (AAAA) records
+        $record_type = ($ip_version === 'v6') ? DNS_AAAA : DNS_A;
+        $ip_field = ($ip_version === 'v6') ? 'ipv6' : 'ip';
+
+        $records = @dns_get_record($hostname, $record_type);
+
+        // If forward lookup fails, we can't verify
+        if (empty($records)) {
+            return false;
+        }
+
+        // Extract IPs from DNS records
+        $forward_ips = array();
+        foreach ($records as $record) {
+            if (isset($record[$ip_field])) {
+                $forward_ips[] = $record[$ip_field];
+            }
+        }
+
+        if (empty($forward_ips)) {
+            return false;
+        }
+
+        // Check if the original IP is in the list of IPs the hostname resolves to
+        if ($ip_version === 'v6') {
+            $normalized_ip = self::ip__v6_normalize($ip);
+            foreach ($forward_ips as $forward_ip) {
+                if (self::ip__v6_normalize($forward_ip) === $normalized_ip) {
+                    return $hostname;
+                }
+            }
+        } elseif (in_array($ip, $forward_ips, true)) {
+            return $hostname;
+        }
+
+        return false;
 	}
-	
+
 	/**
 	 * Resolve DNS to IP
 	 *
@@ -424,7 +429,7 @@ class Helper
 	 */
 	static public function dns__resolve($host, $out = false)
 	{
-		
+
 		// Get DNS records about URL
 		if(function_exists('dns_get_record')){
 			$records = dns_get_record($host, DNS_A);
@@ -432,7 +437,7 @@ class Helper
 				$out = $records[0]['ip'];
 			}
 		}
-		
+
 		// Another try if first failed
 		if(!$out && function_exists('gethostbynamel')){
 			$records = gethostbynamel($host);
@@ -440,11 +445,11 @@ class Helper
 				$out = $records[0];
 			}
 		}
-		
+
 		return $out;
-		
+
 	}
-	
+
 	/**
 	 * Function sends raw http request
 	 *
@@ -464,16 +469,16 @@ class Helper
 	static public function http__request($url, $data = array(), $presets = null, $opts = array())
 	{
 		if(function_exists('curl_init')){
-			
+
 			$ch = curl_init();
-			
+
 			if(!empty($data)){
 				// If $data scalar converting it to array
 				$data = is_string($data) || is_int($data) ? array($data => 1) : $data;
 				// Build query
 				$opts[CURLOPT_POSTFIELDS] = $data;
 			}
-			
+
 			// Merging OBLIGATORY options with GIVEN options
 			$opts = self::array_merge__save_numeric_keys(
 				array(
@@ -489,64 +494,64 @@ class Helper
 				),
 				$opts
 			);
-			
+
 			// Use presets
 			$presets = is_array($presets) ? $presets : explode(' ', $presets);
 			foreach($presets as $preset){
-				
+
 				switch($preset){
-					
+
 					// Do not follow redirects
 					case 'dont_follow_redirects':
 						$opts[CURLOPT_FOLLOWLOCATION] = false;
 						$opts[CURLOPT_MAXREDIRS] = 0;
 						break;
-					
+
 					// Get headers only
 					case 'get_code':
 						$opts[CURLOPT_HEADER] = true;
 						$opts[CURLOPT_NOBODY] = true;
 						break;
-					
+
 					// Make a request, don't wait for an answer
 					case 'async':
 						$opts[CURLOPT_CONNECTTIMEOUT_MS] = 1000;
 						$opts[CURLOPT_TIMEOUT_MS] = 1000;
 						break;
-					
+
 					case 'get':
 						$opts[CURLOPT_URL] .= $data ? '?' . str_replace("&amp;", "&", http_build_query($data)) : '';
 						$opts[CURLOPT_CUSTOMREQUEST] = 'GET';
 						$opts[CURLOPT_POST] = false;
 						$opts[CURLOPT_POSTFIELDS] = null;
 						break;
-					
+
 					case 'ssl':
 						$opts[CURLOPT_SSL_VERIFYPEER] = true;
 						$opts[CURLOPT_SSL_VERIFYHOST] = 2;
 						if(defined('CLEANTALK_CASERT_PATH') && CLEANTALK_CASERT_PATH)
 							$opts[CURLOPT_CAINFO] = CLEANTALK_CASERT_PATH;
 						break;
-					
+
 					default:
-						
+
 						break;
 				}
-				
+
 			}
 			unset($preset);
-			
+
 			curl_setopt_array($ch, $opts);
 			$result = curl_exec($ch);
 			// RETURN if async request
 			if(in_array('async', $presets))
 				return true;
-			
+
 			if($result){
-				
+
 				if(strpos($result, PHP_EOL) !== false && !in_array('dont_split_to_array', $presets))
 					$result = explode(PHP_EOL, $result);
-				
+
 				// Get code crossPHP method
 				if(in_array('get_code', $presets)){
 					$curl_info = curl_getinfo($ch);
@@ -558,7 +563,7 @@ class Helper
 				$out = array('error' => curl_error($ch));
 		}else
 			$out = array('error' => 'CURL_NOT_INSTALLED');
-		
+
 		/**
 		 * Getting HTTP-response code without cURL
 		 */
@@ -568,10 +573,10 @@ class Helper
 			$headers = get_headers($url);
 			$out = (int)preg_replace('/.*(\d{3}).*/', '$1', $headers[0]);
 		}
-		
+
 		return $out;
 	}
-	
+
 	/**
 	 * Merging arrays without reseting numeric keys
 	 *
@@ -587,7 +592,7 @@ class Helper
 		}
 		return $arr1;
 	}
-	
+
 	/**
 	 * Merging arrays without reseting numeric keys recursive
 	 *
@@ -599,21 +604,21 @@ class Helper
 	public static function array_merge__save_numeric_keys__recursive($arr1, $arr2)
 	{
 		foreach($arr2 as $key => $val){
-			
+
 			// Array | array => array
 			if(isset($arr1[$key]) && is_array($arr1[$key]) && is_array($val)){
 				$arr1[$key] = self::array_merge__save_numeric_keys__recursive($arr1[$key], $val);
-				
+
 			// Scalar | array => array
 			}elseif(isset($arr1[$key]) && !is_array($arr1[$key]) && is_array($val)){
 				$tmp = $arr1[$key] =
 				$arr1[$key] = $val;
 				$arr1[$key][] = $tmp;
-				
+
 			// array  | scalar => array
 			}elseif(isset($arr1[$key]) && is_array($arr1[$key]) && !is_array($val)){
 				$arr1[$key][] = $val;
-				
+
 			// scalar | scalar => scalar
 			}else{
 				$arr1[$key] = $val;
@@ -621,7 +626,7 @@ class Helper
 		}
 		return $arr1;
 	}
-	
+
 	/**
 	 * Function removing non UTF8 characters from array|string|object
 	 *
@@ -637,7 +642,7 @@ class Helper
 				$val = self::removeNonUTF8($val);
 			}
 			unset($key, $val);
-			
+
 			//String
 		}else{
 			if(!preg_match('//u', $data))
@@ -645,7 +650,7 @@ class Helper
 		}
 		return $data;
 	}
-	
+
 	/**
 	 * Function convert anything to UTF8 and removes non UTF8 characters
 	 *
@@ -662,7 +667,7 @@ class Helper
 				$val = self::toUTF8($val, $data_codepage);
 			}
 			unset($key, $val);
-			
+
 			//String
 		}else{
 			if(!preg_match('//u', $obj) && function_exists('mb_detect_encoding') && function_exists('mb_convert_encoding')){
@@ -674,7 +679,7 @@ class Helper
 		}
 		return $obj;
 	}
-	
+
 	/**
 	 * Function convert from UTF8
 	 *
@@ -691,7 +696,7 @@ class Helper
 				$val = self::fromUTF8($val, $data_codepage);
 			}
 			unset($key, $val);
-			
+
 			//String
 		}else{
 			if(preg_match('u', $obj) && function_exists('mb_convert_encoding') && $data_codepage !== null)
@@ -699,7 +704,7 @@ class Helper
 		}
 		return $obj;
 	}
-	
+
 	/**
 	 * Checks if the string is JSON type
 	 *

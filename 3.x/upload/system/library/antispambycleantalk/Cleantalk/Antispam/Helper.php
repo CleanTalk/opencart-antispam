@@ -39,26 +39,6 @@ class Helper
 	);
 
 	/**
-	 * @var array Set of CleanTalk servers
-	 */
-	public static $cleantalks_servers = array(
-		// MODERATE
-		'moderate1.cleantalk.org' => '162.243.144.175',
-		'moderate2.cleantalk.org' => '159.203.121.181',
-		'moderate3.cleantalk.org' => '88.198.153.60',
-		'moderate4.cleantalk.org' => '159.69.51.30',
-		'moderate5.cleantalk.org' => '95.216.200.119',
-		'moderate6.cleantalk.org' => '138.68.234.8',
-		// APIX
-		'apix1.cleantalk.org' => '35.158.52.161',
-		'apix2.cleantalk.org' => '18.206.49.217',
-		'apix3.cleantalk.org' => '3.18.23.246',
-		//ns
-		'netserv2.cleantalk.org' => '178.63.60.214',
-		'netserv3.cleantalk.org' => '188.40.14.173',
-	);
-
-	/**
 	 * Getting arrays of IP (REMOTE_ADDR, X-Forwarded-For, X-Real-Ip, Cf_Connecting_Ip)
 	 *
 	 * @param array $ip_types Type of IP you want to receive
@@ -361,41 +341,23 @@ class Helper
 		return $ip;
 	}
 
-	/**
-	 * Get URL form IP. Check if it's belong to cleantalk.
-	 *
-	 * @param string $ip
-	 *
-	 * @return false|int|string
-	 */
-	static public function ip__is_cleantalks($ip)
-	{
-		if(self::ip__validate($ip)){
-			$url = array_search($ip, self::$cleantalks_servers);
-			return $url
-				? true
-				: false;
-		}else
-			return false;
-	}
 
-	/**
-	 * Get URL form IP. Check if it's belong to cleantalk.
-	 *
-	 * @param $ip
-	 *
-	 * @return false|int|string
-	 */
-	static public function ip__resolve__cleantalks($ip)
-	{
-		if(self::ip__validate($ip)){
-			$url = array_search($ip, self::$cleantalks_servers);
-			return $url
-				? $url
-				: self::ip__resolve($ip);
-		}else
-			return $ip;
-	}
+    /**
+     * Get URL form IP. Check if it's belong to cleantalk.
+     *
+     * @param $ip
+     *
+     * @return false|int|string
+     */
+    static public function isCleanTalkServer($ip)
+    {
+        $pattern = '/^(api|apix[0-9]+|moderate|moderate[0-9]+)\.cleantalk\.(org|ru)$/';
+        $validated_host = self::ipResolve($ip);
+        if ($validated_host && preg_match($pattern, $validated_host)) {
+            return $validated_host;
+        }
+        return false;
+    }
 
     /**
      * Get URL form IP
@@ -404,7 +366,7 @@ class Helper
      *
      * @return string|false
      */
-    static public function ip__resolve($ip)
+    static public function ipResolve($ip)
     {
         // Validate IP first
         $ip_version = self::ip__validate($ip);

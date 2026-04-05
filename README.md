@@ -2,6 +2,8 @@
 Opencart anti-spam extension.
 # Version 2.1
 
+If you find this project useful, please consider starring ⭐ it on GitHub — it helps us grow and support development!
+
 ## How to install
 
 1) Add install.xml and upload folder to your .zip package and rename it to "antispambycleantalk.ocmod.zip"

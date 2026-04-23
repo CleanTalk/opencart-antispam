@@ -341,32 +341,16 @@ class Helper
 		return $ip;
 	}
 
-	/**
-	 * Get URL form IP. Check if it's belong to cleantalk.
-	 *
-	 * @param $ip
-	 *
-	 * @return false|int|string
-	 */
-	static public function isCleanTalkServer($ip)
-	{
-        $pattern = '/^(api|apix[0-9]+|moderate|moderate[0-9]+)\.cleantalk\.(org|ru)$/';
-        $validated_host = self::ipResolve($ip);
-        if ($validated_host && preg_match($pattern, $validated_host)) {
-            return $validated_host;
-        }
-        return false;
-	}
-
-	/**
-	 * Get URL form IP
-	 *
-	 * @param $ip
-	 *
-	 * @return string|false
-	 */
-	static public function ipResolve($ip)
-	{
+    /**
+     * Resolve IP to hostname with FCrDNS (Forward-Confirmed reverse DNS) verification.
+     * Protects against PTR spoofing by verifying the hostname resolves back to the same IP.
+     *
+     * @param string $ip IP address to resolve
+     *
+     * @return string|false Verified hostname, original IP if unverifiable, or false on failure
+     */
+    public static function ipResolve($ip)
+    {
         // Validate IP first
         $ip_version = self::ip__validate($ip);
         if (!$ip_version) {
@@ -378,17 +362,36 @@ class Helper
 
         // If gethostbyaddr returns the IP itself, it means no PTR record exists
         if (!$hostname || $hostname === $ip) {
-            return false;
+            return $ip;
         }
 
-        // Forward DNS lookup - use dns_get_record() to support both IPv4 (A) and IPv6 (AAAA) records
-        $record_type = ($ip_version === 'v6') ? DNS_AAAA : DNS_A;
         $ip_field = ($ip_version === 'v6') ? 'ipv6' : 'ip';
+        $records = [];
 
-        $records = @dns_get_record($hostname, $record_type);
+        // Forward DNS lookup - use dns_get_record() to support both IPv4 (A) and IPv6 (AAAA) records
+        if ( function_exists('dns_get_record') ) {
+            $record_type = ($ip_version === 'v6') ? DNS_AAAA : DNS_A;
+            $dns_records = dns_get_record($hostname, $record_type);
+            if ( $dns_records !== false ) {
+                $records = $dns_records;
+            }
+        }
+
+        // Another try if first failed (only for v4)
+        if ( empty($records) && $ip_version === 'v4' && function_exists('gethostbynamel') ) {
+            $ips_v4 = gethostbynamel($hostname);
+            if ( $ips_v4 !== false ) {
+                foreach ( $ips_v4 as $_ip ) {
+                    $records[] = array(
+                        "ip" => $_ip,
+                        "host" => $hostname
+                    );
+                }
+            }
+        }
 
         // If forward lookup fails, we can't verify
-        if (empty($records)) {
+        if ( empty($records) ) {
             return false;
         }
 
@@ -417,38 +420,7 @@ class Helper
         }
 
         return false;
-	}
-
-	/**
-	 * Resolve DNS to IP
-	 *
-	 * @param      $host
-	 * @param bool $out
-	 *
-	 * @return bool
-	 */
-	static public function dns__resolve($host, $out = false)
-	{
-
-		// Get DNS records about URL
-		if(function_exists('dns_get_record')){
-			$records = dns_get_record($host, DNS_A);
-			if($records !== false){
-				$out = $records[0]['ip'];
-			}
-		}
-
-		// Another try if first failed
-		if(!$out && function_exists('gethostbynamel')){
-			$records = gethostbynamel($host);
-			if($records !== false){
-				$out = $records[0];
-			}
-		}
-
-		return $out;
-
-	}
+    }
 
 	/**
 	 * Function sends raw http request

@@ -16,16 +16,16 @@ use Cleantalk\Common\Server;
 class SFW
 {
 	const WRITE_LIMIT = 5000;
-	
+
 	public $ip_array = array();
-	
+
 	public $results = array();
 	public $blocked_ip = '';
 	public $result = false;
 	public $pass = true;
-	
+
 	public $test = false;
-	
+
 	/**
 	 * @var array of arrays array(origin => array(
 		'ip'      => '192.168.0.1',
@@ -35,14 +35,14 @@ class SFW
 		)
 	 */
 	public $all_ips = array();
-	
+
 	/**
 	 * @var array of arrays array(origin => array(
 		'ip'      => '192.168.0.1',
 		)
 	 */
 	public $passed_ips = array();
-	
+
 	/**
 	 * @var array of arrays array(origin => array(
 		'ip'      => '192.168.0.1',
@@ -57,7 +57,7 @@ class SFW
 	private $table_prefix;
     private $data_table;
     private $log_table;
-	
+
 	//Debug
     private $debug;
     private $debug_data = '';
@@ -68,7 +68,7 @@ class SFW
         $this->table_prefix = $db_prefix;
         $this->data_table = $db_prefix . 'cleantalk_sfw';
         $this->log_table  = $db_prefix . 'cleantalk_sfw_logs';
-		
+
 		$this->debug = isset($_GET['debug']) && intval($_GET['debug']) === 1 ? true : false;
 
         $this->ip_array = $this->ip__get( array('real'), true );
@@ -109,13 +109,12 @@ class SFW
             }*/
             // Pass remote calls
             if( $this->pass === false ){
-                if(isset($_GET['spbc_remote_call_token'], $_GET['spbc_remote_call_action'], $_GET['plugin_name'])){
-                    foreach( $this->blocked_ips as $ip ){
-                        $resolved = Helper::ip__resolve($ip['ip']);
-                        if($resolved && preg_match('/cleantalk\.org/', $resolved) === 1 || $resolved === 'back'){
-                            $this->pass = true;
-                        }
-                    } unset($ip);
+                // todo Refactor RemoteCalls::check() to run this check before SFW started
+                if(
+                    isset($_GET['spbc_remote_call_token'], $_GET['spbc_remote_call_action'], $_GET['plugin_name']) &&
+                    $_GET['spbc_remote_call_token'] === md5($apikey)
+                ){
+                    $this->pass = true;
                 }
             }
 
@@ -131,7 +130,7 @@ class SFW
             }
         }
     }
-	
+
 	/**
 	 * Getting arrays of IP (REMOTE_ADDR, X-Forwarded-For, X-Real-Ip, Cf_Connecting_Ip)
 	 *
@@ -142,11 +141,11 @@ class SFW
 	 */
 	private function ip__get( $ips_input = array('real', 'remote_addr', 'x_forwarded_for', 'x_real_ip', 'cloud_flare'), $v4_only = true )
     {
-		
+
 		$result = Helper::ip__get( $ips_input, $v4_only );
-		
+
 		$result = !empty($result) ? array( 'real' => $result ) : array();
-		
+
 		if( isset( $_GET['sfw_test_ip'] ) )
 		{
 			if( Helper::ip__validate( $_GET['sfw_test_ip'] ) !== false ){
@@ -154,11 +153,11 @@ class SFW
 				$this->test = true;
 			}
 		}
-		
+
 		return $result;
-		
+
 	}
-	
+
 	/**
 	 * Checks IP via Database
 	 */
@@ -216,10 +215,10 @@ class SFW
 					'ip'     => $current_ip,
 					'status' => 1,
 				);
-			}		
+			}
 		}
 	}
-	
+
 	/**
 	 * Add entry to SFW log.
 	 * Writes to database.
@@ -232,7 +231,7 @@ class SFW
 		if($ip === NULL || $result === NULL){
 			return;
 		}
-		
+
 		$blocked = ($result == 'blocked' ? ' + 1' : '');
 		$time = time();
 
@@ -250,7 +249,7 @@ class SFW
 
 		$this->db->query($query);
 	}
-	
+
 	/**
 	 * Sends and wipe SFW log
 	 *
@@ -265,14 +264,14 @@ class SFW
 		$result = $this->db->query($query);
 
 		if( count( $result->rows ) ){
-			
+
 			//Compile logs
 			$data = array();
 			foreach( $result->rows as $key => $value ){
 				$data[] = array( trim($value['ip']), $value['all_entries'], $value['all_entries']-$value['blocked_entries'], $value['entries_timestamp'] );
 			}
 			unset($key, $value);
-			
+
 			//Sending the request
 			$result = API::method__sfw_logs( $ct_key, $data );
 			//Checking answer and deleting all lines from the table
@@ -285,7 +284,7 @@ class SFW
 			}else{
 				return $result;
 			}
-				
+
 		} else {
 		    return $result = array( 'rows' => 0 );
         }
@@ -465,7 +464,7 @@ class SFW
         }else
             return array('error' => 'NO_REMOTE_FILE_FOUND');
     }
-	
+
 	/**
 	 * Shows DIE page.
 	 * Stops script executing.

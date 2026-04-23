@@ -186,7 +186,7 @@ class Cleantalk {
         if($request->method_name !== 'send_feedback'){
 
             $ct_tmp = apache_request_headers();
-            
+
             $cookie_names = array( 'Cookie', 'cookie', 'COOKIE' );
             foreach( $cookie_names as $cookie_name ){
                 if( isset( $ct_tmp[ $cookie_name ] ) ){
@@ -208,7 +208,7 @@ class Cleantalk {
                     ), '', $ct_tmp[ $cookie_name ] );
                 }
             }
-            
+
             $request->all_headers = json_encode($ct_tmp);
         }
 
@@ -267,7 +267,7 @@ class Cleantalk {
             // Loop until find work server
             foreach ($servers as $server) {
 
-                $dns = Helper::ip__resolve__cleantalks($server['ip']);
+                $dns = Helper::ipResolve($server['ip']);
                 if(!$dns)
                     continue;
 

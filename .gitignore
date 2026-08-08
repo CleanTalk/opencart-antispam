@@ -53,6 +53,8 @@
 !/catalog/model/extension/module/antispambycleantalk.php
 
 !/catalog/view/
+!/catalog/view/javascript/
+!/catalog/view/javascript/antispambycleantalk.js
 !/catalog/view/theme/
 !/catalog/view/theme/default/
 !/catalog/view/theme/default/template/

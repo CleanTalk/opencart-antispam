@@ -10,7 +10,7 @@ use Cleantalk\Antispam\Helper;
 
 class Core
 {
-    const VERSION = '2.1';
+    const VERSION = '2.1.2';
 
     private $agent;
 
@@ -98,6 +98,12 @@ class Core
 
     public function setCookie()
     {
+        // Skip on AJAX (Journal infinite scroll / filters) — Set-Cookie during XHR is unnecessary
+        $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        if ($is_ajax) {
+            return;
+        }
+
         if (!headers_sent()) {
             // Cookie names to validate
             $cookie_test_value = array(

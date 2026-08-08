@@ -1,3 +1,9 @@
+// One-time init — Journal IAS may re-execute this script when loading next pages.
+if (window.apbctJsInitialized) {
+	// no-op
+} else {
+window.apbctJsInitialized = true;
+
 var ct_date = new Date(),
 	ctTimeMs = new Date().getTime(),
 	ctMouseEventTimerFlag = true, //Reading interval flag
@@ -30,7 +36,7 @@ setTimeout(function(){
 //Writing first key press timestamp
 var ctFunctionFirstKey = function output(event){
 	var KeyTimestamp = Math.floor(new Date().getTime()/1000);
-	ctSetCookieSec("ct_fkp_timestamp", KeyTimestamp);
+	ctSetCookieSec("apbct_fkp_timestamp", KeyTimestamp);
 	ctKeyStopStopListening();
 }
 
@@ -78,65 +84,6 @@ function ctKeyStopStopListening(){
 apbct_attach_event_handler(window, "mousemove", ctFunctionMouseMove);
 apbct_attach_event_handler(window, "mousedown", ctFunctionFirstKey);
 apbct_attach_event_handler(window, "keydown", ctFunctionFirstKey);
-
-// Ready function
-function apbct_ready(){
-	ctSetCookieSec("apbct_visible_fields", 0);
-	ctSetCookieSec("apbct_visible_fields_count", 0);
-	if (document.getElementById("ct_checkjs"))
-		document.getElementById("ct_checkjs").value = ct_date.getFullYear();
-
-	for(var i = 0; i < document.getElementsByClassName('ct_checkjs').length; i++){
-		console.log(document.getElementsByClassName('ct_checkjs')[i]);
-		document.getElementsByClassName('ct_checkjs')[i].value = ct_date.getFullYear();
-	}
-
-	setTimeout(function(){
-
-		for(var i = 0; i < document.forms.length; i++){
-			var form = document.forms[i];
-
-			//Exclusion for forms
-			if (
-				form.classList.contains('slp_search_form') || //StoreLocatorPlus form
-				form.parentElement.classList.contains('mec-booking') ||
-				form.action.toString().indexOf('activehosted.com') || // Active Campaign
-				(form.id && form.id === 'caspioform') || //Caspio Form
-				form.elements.ct_checkjs === 'undefined' // The form does not contain the ct_ field, skip this
-			)
-				continue;
-
-			form.onsubmit_prev = form.onsubmit;
-			form.onsubmit = function (event) {
-
-				event.preventDefault();
-
-				apbct_collect_visible_fields_and_set_cookie(this);
-
-				// Call previous submit action
-				if (event.target.onsubmit_prev instanceof Function) {
-					setTimeout(function () {
-						event.target.onsubmit_prev.call(event.target, event);
-					}, 500);
-				}
-			};
-		}
-	}, 1000);
-}
-apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
-
-// Include JS checking code to ajax requests.
-// Guard: Journal/OpenCart AJAX often passes data as null or an object.
-// Calling .includes() on non-strings throws and breaks infinite scroll / lazy-load.
-// Bind once — Journal IAS may re-execute this script when loading next pages.
-if (!window.apbctAjaxSendBound && typeof jQuery !== 'undefined') {
-	window.apbctAjaxSendBound = true;
-	jQuery(document).ajaxSend(function(event, xhr, settings) {
-		if (typeof settings.data === 'string' && settings.data.indexOf('account=register') !== -1) {
-			settings.data += '&ct_checkjs=' + ($('#ct_checkjs').val() || '');
-		}
-	});
-}
 
 function apbct_collect_visible_fields_and_set_cookie(form ) {
 
@@ -189,3 +136,58 @@ function apbct_collect_visible_fields_and_set_cookie(form ) {
     ctSetCookieSec("apbct_visible_fields_count", inputs_visible_count);
 
 }
+
+// Ready function
+function apbct_ready(){
+	ctSetCookieSec("apbct_visible_fields", 0);
+	ctSetCookieSec("apbct_visible_fields_count", 0);
+	if (document.getElementById("ct_checkjs"))
+		document.getElementById("ct_checkjs").value = ct_date.getFullYear();
+
+	for(var i = 0; i < document.getElementsByClassName('ct_checkjs').length; i++){
+		document.getElementsByClassName('ct_checkjs')[i].value = ct_date.getFullYear();
+	}
+
+	setTimeout(function(){
+
+		for(var i = 0; i < document.forms.length; i++){
+			var form = document.forms[i];
+			var formAction = (form.getAttribute('action') || form.action || '').toString();
+
+			//Exclusion for forms
+			if (
+				form.classList.contains('slp_search_form') || //StoreLocatorPlus form
+				(form.parentElement && form.parentElement.classList.contains('mec-booking')) ||
+				formAction.indexOf('activehosted.com') !== -1 || // Active Campaign
+				(form.id && form.id === 'caspioform') || //Caspio Form
+				typeof form.elements.ct_checkjs === 'undefined' // The form does not contain the ct_ field, skip this
+			)
+				continue;
+
+			if (form.getAttribute('data-apbct-submit-bound')) {
+				continue;
+			}
+			form.setAttribute('data-apbct-submit-bound', '1');
+
+			// Collect visible fields without blocking native / previous submit handlers
+			apbct_attach_event_handler(form, 'submit', function(event){
+				var target = event.target || event.srcElement;
+				apbct_collect_visible_fields_and_set_cookie(target);
+			});
+		}
+	}, 1000);
+}
+apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
+
+// Include JS checking code to ajax requests.
+// Guard: Journal/OpenCart AJAX often passes data as null or an object.
+if (typeof jQuery !== 'undefined') {
+	jQuery(document).ajaxSend(function(event, xhr, settings) {
+		if (typeof settings.data === 'string' && settings.data.indexOf('account=register') !== -1) {
+			var checkjs = jQuery('#ct_checkjs').val() || '';
+			settings.data += '&ct_checkjs=' + checkjs;
+		}
+	});
+}
+
+} // end window.apbctJsInitialized

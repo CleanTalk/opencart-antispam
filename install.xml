@@ -280,8 +280,7 @@
     <!-- X-Form Pro -->
     <file path="catalog/controller/extension/module/xform.php">
         <operation>
-            <search><![CDATA[$submitted_data = isset($this->request->post['xform']) ? $this->request->post['xform'] : array();
-        $errors = $this->xform->validateForm($formId, $submitted_data, $files);]]></search>
+            <search><![CDATA[        $errors = $this->xform->validateForm($formId, $submitted_data, $files);]]></search>
             <add position="before"><![CDATA[
         if (
             $this->config->get('module_antispambycleantalk_status') &&

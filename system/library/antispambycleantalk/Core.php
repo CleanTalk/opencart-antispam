@@ -182,7 +182,13 @@ class Core
                 break;
             // X-Form Pro
             case 'ControllerExtensionModuleXform' :
-                $data = !empty($controller->request->post['xform']) ? $controller->request->post['xform'] : $controller->request->post;
+                if ( !empty($controller->request->post['xform']) && is_array($controller->request->post['xform']) ) {
+                    $data = $controller->request->post['xform'];
+                } elseif ( is_array($controller->request->post) ) {
+                    $data = $controller->request->post;
+                } else {
+                    $data = array();
+                }
                 $ct_result = $this->onSpamCheck( 'contact_form__opencart3__xform_pro', $data );
                 break;
             case 'ControllerJournal3Form'       :

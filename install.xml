@@ -298,7 +298,12 @@
                 );
             }
             if (!empty($this->request->server['HTTP_REFERER'])) {
-                $this->response->redirect($this->request->server['HTTP_REFERER']);
+                $referer = $this->request->server['HTTP_REFERER'];
+                $referer_host = parse_url($referer, PHP_URL_HOST);
+                $current_host = !empty($this->request->server['HTTP_HOST']) ? $this->request->server['HTTP_HOST'] : '';
+                if ($referer_host && $current_host && strcasecmp($referer_host, $current_host) === 0) {
+                    $this->response->redirect($referer);
+                }
             }
             return array('errors' => $xform_fields);
         }

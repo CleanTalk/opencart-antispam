@@ -247,7 +247,7 @@ if (typeof jQuery !== 'undefined') {
 				var formId = apbct_get_xform_form_id(url, settings);
 				if (formId) {
 					jQuery('#xform-' + formId + ' div.xform-success')
-						.html(json.message)
+						.text(json.message)
 						.css({
 							color: '#a94442',
 							background: '#f2dede',

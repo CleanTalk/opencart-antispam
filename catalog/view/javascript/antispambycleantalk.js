@@ -183,10 +183,47 @@ apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
 // Guard: Journal/OpenCart AJAX often passes data as null or an object.
 if (typeof jQuery !== 'undefined') {
 	jQuery(document).ajaxSend(function(event, xhr, settings) {
+		var url = settings.url || '';
+
 		if (typeof settings.data === 'string' && settings.data.indexOf('account=register') !== -1) {
-			var checkjs = jQuery('#ct_checkjs').val() || '';
+			var checkjs = jQuery('#ct_checkjs').val() || jQuery('.ct_checkjs').val() || '';
 			settings.data += '&ct_checkjs=' + checkjs;
 		}
+
+		// X-Form Pro sends FormData via AJAX
+		if (url.indexOf('extension/module/xform') !== -1 && settings.data instanceof FormData) {
+			var xformCheckjs = jQuery('#ct_checkjs').val() || jQuery('.ct_checkjs').val() || '';
+			if (!xformCheckjs) {
+				xformCheckjs = new Date().getFullYear();
+			}
+			settings.data.append('ct_checkjs', xformCheckjs);
+		}
+	});
+
+	jQuery(document).ajaxSuccess(function(event, xhr, settings) {
+		var url = settings.url || '';
+		if (url.indexOf('extension/module/xform') === -1) {
+			return;
+		}
+
+		try {
+			var json = JSON.parse(xhr.responseText);
+			if (json.ct_spam && json.message) {
+				var match = url.match(/formId=(\d+)/);
+				if (match) {
+					jQuery('#xform-' + match[1] + ' div.xform-success')
+						.html(json.message)
+						.css({
+							color: '#a94442',
+							background: '#f2dede',
+							border: '1px solid #ebccd1',
+							padding: '10px',
+							marginBottom: '10px'
+						})
+						.show();
+				}
+			}
+		} catch (e) {}
 	});
 }
 

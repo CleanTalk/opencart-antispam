@@ -157,7 +157,7 @@
             <add position="before"><![CDATA[
             if (empty($this->error))
             {
-                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_registrations'))
+                if ($this->config->get('module_antispambycleantalk_status') && $this->config->get('module_antispambycleantalk_check_contact_form'))
                 {
                     if( $this->apbct->is_spam( $this ) )
                     {
@@ -274,6 +274,55 @@
                     }
                 }
             }
+            ]]></add>
+        </operation>
+    </file>
+    <!-- X-Form Pro -->
+    <file path="catalog/controller/extension/module/xform.php">
+        <operation>
+            <search><![CDATA[        $errors = $this->xform->validateForm($formId, $submitted_data, $files);]]></search>
+            <add position="before"><![CDATA[
+        if (
+            $this->config->get('module_antispambycleantalk_status') &&
+            $this->config->get('module_antispambycleantalk_check_contact_form') &&
+            $this->apbct->is_spam($this)
+        ) {
+            $xform_fields = !empty($this->request->post['xform']) && is_array($this->request->post['xform'])
+                ? array_keys($this->request->post['xform'])
+                : array('ct_spam');
+            if (!$auto_redirect) {
+                return array(
+                    'errors' => $xform_fields,
+                    'ct_spam' => 1,
+                    'message' => $this->apbct->get_block_comment()
+                );
+            }
+            if (!empty($this->request->server['HTTP_REFERER'])) {
+                $referer = $this->request->server['HTTP_REFERER'];
+                $referer_host = parse_url($referer, PHP_URL_HOST);
+                $current_host = !empty($this->request->server['HTTP_HOST']) ? $this->request->server['HTTP_HOST'] : '';
+                if ($referer_host && $current_host && strcasecmp($referer_host, $current_host) === 0) {
+                    $this->response->redirect($referer);
+                }
+            }
+            return array('errors' => $xform_fields);
+        }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="system/library/xform.php">
+        <operation>
+            <search><![CDATA[$output   .= '<input type="hidden" name="formId" value="'.$formId.'">';]]></search>
+            <add position="before"><![CDATA[
+        $output   .= '<input type="hidden" name="ct_checkjs" class="ct_checkjs" value="0" />';
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/extension/module/xform.twig">
+        <operation error="skip">
+            <search index="0"><![CDATA[<input type="hidden" name="formId"]]></search>
+            <add position="before"><![CDATA[
+            <input type="hidden" name="ct_checkjs" class="ct_checkjs" value="0" />
             ]]></add>
         </operation>
     </file>

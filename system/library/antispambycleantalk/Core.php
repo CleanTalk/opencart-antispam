@@ -180,6 +180,17 @@ class Core
             case 'ControllerPageFormPro' :
                 $ct_result = $this->onSpamCheck( 'contact_form__opencart3__form_builder_pro', $controller->request->post['field'] );
                 break;
+            // X-Form Pro
+            case 'ControllerExtensionModuleXform' :
+                if ( !empty($controller->request->post['xform']) && is_array($controller->request->post['xform']) ) {
+                    $data = $controller->request->post['xform'];
+                } elseif ( is_array($controller->request->post) ) {
+                    $data = $controller->request->post;
+                } else {
+                    $data = array();
+                }
+                $ct_result = $this->onSpamCheck( 'contact_form__opencart3__xform_pro', $data );
+                break;
             case 'ControllerJournal3Form'       :
                 $ct_result = $this->onSpamCheck( 'general_comment', $controller->request->post['item'] );
                 break;
@@ -233,7 +244,8 @@ class Core
         $js_on = 0;
         if (
             ( isset($_POST['ct_checkjs']) && $_POST['ct_checkjs'] == date("Y") ) ||
-            $content_type === 'contact_form__opencart3__form_builder_pro' // Hard fix for Form Builder Pro
+            $content_type === 'contact_form__opencart3__form_builder_pro' || // Hard fix for Form Builder Pro
+            $content_type === 'contact_form__opencart3__xform_pro' // Hard fix for X-Form Pro
         ){
             $js_on = 1;
         }
@@ -270,6 +282,7 @@ class Core
                 $ct_result = $ct->isAllowMessage($ct_request);
                 break;
             case 'contact_form__opencart3__form_builder_pro' :
+            case 'contact_form__opencart3__xform_pro' :
                 $fields = $this->get_fields_any( $data );
                 $ct_request->sender_email    = ($fields['email']    ? $fields['email']    : '');
                 $ct_request->sender_nickname = ($fields['nickname'] ? $fields['nickname'] : '');

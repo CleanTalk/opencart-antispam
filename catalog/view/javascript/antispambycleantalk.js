@@ -179,14 +179,86 @@ function apbct_ready(){
 }
 apbct_attach_event_handler(window, "DOMContentLoaded", apbct_ready);
 
+function apbct_get_checkjs_value() {
+	var checkjs = jQuery('#ct_checkjs').val() || jQuery('.ct_checkjs').first().val() || '';
+	if (!checkjs || checkjs === '0') {
+		checkjs = new Date().getFullYear();
+	}
+	return checkjs;
+}
+
+function apbct_get_xform_form_id(url, settings) {
+	var match = url.match(/formId=(\d+)/);
+	if (match) {
+		return match[1];
+	}
+
+	if (typeof FormData !== 'undefined' && settings.data instanceof FormData && settings.data.has && settings.data.has('formId')) {
+		return settings.data.get('formId');
+	}
+
+	var hiddenFormId = jQuery('input[name="formId"]').val();
+	if (hiddenFormId) {
+		return hiddenFormId;
+	}
+
+	var containerMatch = jQuery('[id^="xform-"]').first().attr('id');
+	if (containerMatch) {
+		match = containerMatch.match(/^xform-(\d+)$/);
+		if (match) {
+			return match[1];
+		}
+	}
+
+	return null;
+}
+
 // Include JS checking code to ajax requests.
 // Guard: Journal/OpenCart AJAX often passes data as null or an object.
 if (typeof jQuery !== 'undefined') {
 	jQuery(document).ajaxSend(function(event, xhr, settings) {
+		var url = settings.url || '';
+
 		if (typeof settings.data === 'string' && settings.data.indexOf('account=register') !== -1) {
-			var checkjs = jQuery('#ct_checkjs').val() || '';
-			settings.data += '&ct_checkjs=' + checkjs;
+			settings.data += '&ct_checkjs=' + apbct_get_checkjs_value();
 		}
+
+		// X-Form Pro sends FormData via AJAX
+		if (
+			typeof FormData !== 'undefined' &&
+			url.indexOf('extension/module/xform') !== -1 &&
+			settings.data instanceof FormData
+		) {
+			if (!settings.data.has || !settings.data.has('ct_checkjs')) {
+				settings.data.append('ct_checkjs', apbct_get_checkjs_value());
+			}
+		}
+	});
+
+	jQuery(document).ajaxSuccess(function(event, xhr, settings) {
+		var url = settings.url || '';
+		if (url.indexOf('extension/module/xform') === -1) {
+			return;
+		}
+
+		try {
+			var json = JSON.parse(xhr.responseText);
+			if (json.ct_spam && json.message) {
+				var formId = apbct_get_xform_form_id(url, settings);
+				if (formId) {
+					jQuery('#xform-' + formId + ' div.xform-success')
+						.text(json.message)
+						.css({
+							color: '#a94442',
+							background: '#f2dede',
+							border: '1px solid #ebccd1',
+							padding: '10px',
+							marginBottom: '10px'
+						})
+						.show();
+				}
+			}
+		} catch (e) {}
 	});
 }
 
